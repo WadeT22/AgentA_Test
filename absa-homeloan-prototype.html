@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Absa Home Loan Application</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: #333; font-size: 14px; }
+
+  /* ========== SCREEN SYSTEM ========== */
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ========== HEADER ========== */
+  .header {
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .absa-logo {
+    width: 44px; height: 44px;
+    background: #C8102E;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 900; font-size: 13px; letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+  .header-title { font-size: 15px; font-weight: 400; color: #333; }
+  .header-title span { color: #666; }
+  .header-right { display: flex; align-items: center; gap: 20px; }
+  .header-user { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #333; }
+  .user-icon {
+    width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ccc;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .logout-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: none; cursor: pointer;
+    color: #333; font-size: 14px; padding: 0;
+  }
+  .logout-btn:hover { color: #C8102E; }
+  .divider-v { width: 1px; height: 24px; background: #ddd; }
+
+  /* ========== HERO BANNER ========== */
+  .hero {
+    height: 140px;
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23b8c4c8"/></svg>') center/cover;
+    background-color: #8a9ba5;
+    display: flex; align-items: center; padding: 0 40px;
+  }
+  .hero h1 { color: #fff; font-size: 32px; font-weight: 600; }
+
+  /* ========== MAIN LAYOUT ========== */
+  .main-content { display: flex; flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 32px 24px; gap: 48px; }
+
+  /* ========== SIDEBAR NAV ========== */
+  .sidebar { width: 200px; flex-shrink: 0; }
+  .step-list { list-style: none; position: relative; }
+  .step-list::before {
+    content: ''; position: absolute; left: 11px; top: 12px; bottom: 12px;
+    width: 2px; background: #ddd; z-index: 0;
+  }
+  .step-item { position: relative; padding: 6px 0 6px 32px; }
+  .step-dot {
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; z-index: 1;
+    background: #ddd; color: #999;
+  }
+  .step-dot.active { background: #C8102E; color: #fff; }
+  .step-dot.done { background: #C8102E; color: #fff; }
+  .step-dot.done::after { content: '✓'; }
+  .step-dot.done span { display: none; }
+  .step-label { font-size: 13px; color: #999; }
+  .step-label.active { color: #C8102E; font-weight: 600; }
+  .step-label.done { color: #C8102E; }
+  .step-sublabel { font-size: 12px; color: #bbb; padding: 2px 0 2px 32px; }
+  .step-sublabel.active { color: #C8102E; font-weight: 600; }
+  .step-sublabel.done { color: #C8102E; }
+  .step-connector { width: 2px; height: 8px; background: #ddd; margin-left: 11px; }
+  .step-connector.done { background: #C8102E; }
+
+  /* ========== FORM AREA ========== */
+  .form-area { flex: 1; }
+  .form-section-title { font-size: 22px; font-weight: 600; margin-bottom: 24px; color: #222; }
+  .form-subtitle { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #222; }
+
+  .field-group { margin-bottom: 20px; }
+  .field-label { font-size: 13px; font-weight: 500; color: #444; margin-bottom: 6px; display: block; }
+  .field-hint { font-size: 12px; color: #777; margin-top: 4px; display: flex; align-items: flex-start; gap: 4px; }
+
+  input[type=text], input[type=email], input[type=tel], input[type=number] {
+    width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 4px;
+    font-size: 14px; color: #333; background: #fff;
+    transition: border-color 0.2s;
+  }
+  input:focus { outline: none; border-color: #C8102E; }
+  input::placeholder { color: #aaa; }
+  input.filled { border-color: #ccc; }
+
+  .select-wrapper { position: relative; }
+  .select-wrapper select {
+    width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 4px;
+    font-size: 14px; color: #333; background: #fff;
+    appearance: none; cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .select-wrapper select:focus { outline: none; border-color: #C8102E; }
+  .select-wrapper::after {
+    content: '▼'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    font-size: 10px; color: #666; pointer-events: none;
+  }
+
+  /* ========== BUTTONS ========== */
+  .btn-primary {
+    background: #F15A22; color: #fff; border: none; padding: 11px 28px;
+    border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: #d44d1a; }
+  .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+  .btn-secondary {
+    background: #fff; color: #333; border: 2px solid #C8102E; padding: 9px 24px;
+    border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: #C8102E; color: #fff; }
+  .btn-dark {
+    background: #333; color: #fff; border: none; padding: 10px 20px;
+    border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-dark:hover { background: #555; }
+
+  .btn-row { display: flex; justify-content: flex-end; padding-top: 24px; border-top: 1px solid #eee; margin-top: 24px; gap: 12px; }
+
+  /* ========== TOGGLE BUTTONS ========== */
+  .toggle-group { display: flex; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: fit-content; }
+  .toggle-btn {
+    padding: 9px 32px; border: none; background: #fff; font-size: 14px; cursor: pointer;
+    color: #333; transition: all 0.15s;
+  }
+  .toggle-btn.active { background: #C8102E; color: #fff; }
+  .toggle-btn:not(:last-child) { border-right: 1px solid #ccc; }
+
+  /* ========== CHECKBOX ========== */
+  .checkbox-row { display: flex; align-items: flex-start; gap: 10px; margin: 10px 0; }
+  .checkbox-row input[type=checkbox] { width: 18px; height: 18px; margin-top: 2px; accent-color: #C8102E; flex-shrink: 0; cursor: pointer; }
+  .checkbox-row label { font-size: 13px; color: #444; cursor: pointer; line-height: 1.4; }
+  .checkbox-row label a { color: #1565C0; text-decoration: none; }
+  .checkbox-row label a:hover { text-decoration: underline; }
+
+  .check-item { display: flex; align-items: flex-start; gap: 10px; margin: 8px 0; }
+  .check-icon { color: #2e7d32; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .check-text { font-size: 13px; color: #444; line-height: 1.4; }
+  .check-text a { color: #1565C0; text-decoration: none; }
+
+  /* ========== RADIO ========== */
+  .radio-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+  .radio-row input[type=radio] { accent-color: #C8102E; width: 16px; height: 16px; }
+  .radio-row label { font-size: 14px; color: #333; cursor: pointer; }
+
+  /* ========== INFO BOX ========== */
+  .info-box {
+    background: #e8f4fd; border: 1px solid #b3d9f5; border-radius: 4px;
+    padding: 12px 16px; display: flex; gap: 10px; align-items: flex-start;
+    margin: 12px 0;
+  }
+  .info-box .info-icon { color: #1565C0; font-size: 16px; flex-shrink: 0; }
+  .info-box p { font-size: 13px; color: #333; line-height: 1.5; }
+
+  .success-box {
+    background: #f0faf0; border: 1px solid #a5d6a7; border-radius: 4px;
+    padding: 12px 16px; display: flex; gap: 10px; align-items: center;
+    margin: 12px 0;
+  }
+  .success-box .s-icon { color: #2e7d32; font-size: 18px; }
+  .success-box p { font-size: 14px; color: #2e7d32; }
+
+  /* ========== MODAL / OVERLAY CARD ========== */
+  .overlay-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center; z-index: 200;
+  }
+  .overlay-card {
+    background: #fff; border-radius: 8px; padding: 40px;
+    max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;
+  }
+
+  /* ========== LANDING PAGE SPECIFICS ========== */
+  .landing-bg {
+    flex: 1;
+    background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), #7a8f9a;
+    display: flex; align-items: center; justify-content: center; padding: 40px 20px;
+  }
+  .landing-card {
+    background: #fff; border-radius: 8px; padding: 40px;
+    width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
+  }
+  .landing-card h1 { font-size: 26px; font-weight: 600; color: #222; margin-bottom: 28px; }
+  .landing-card h2 { font-size: 18px; font-weight: 600; color: #222; margin: 20px 0 14px; }
+
+  /* ========== CAPTCHA ========== */
+  .captcha-img {
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    padding: 12px; border-radius: 4px; font-family: monospace;
+    font-size: 22px; font-weight: 900; letter-spacing: 6px;
+    color: #aaff00; user-select: none; text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    min-width: 280px; text-align: center; margin-bottom: 8px;
+    position: relative; overflow: hidden;
+  }
+  .captcha-img::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,0.03) 3px, rgba(255,255,255,0.03) 6px);
+  }
+  .captcha-actions { display: flex; gap: 8px; margin-bottom: 12px; }
+  .captcha-btn { background: none; border: 1px solid #ccc; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-size: 16px; }
+  .captcha-row { display: flex; align-items: center; gap: 10px; }
+
+  /* ========== OTP SCREEN ========== */
+  .otp-input-row { display: flex; align-items: center; gap: 10px; }
+  .otp-input-row input { flex: 1; max-width: 300px; }
+
+  /* ========== SUCCESS STATE ========== */
+  .success-state { display: flex; align-items: center; gap: 20px; padding: 20px 0; }
+  .thumbs-circle {
+    width: 80px; height: 80px; border-radius: 50%; background: #f5f5f5;
+    display: flex; align-items: center; justify-content: center; font-size: 36px;
+    flex-shrink: 0;
+  }
+  .success-state h2 { font-size: 28px; font-weight: 700; color: #222; }
+
+  /* ========== FOOTER ========== */
+  .footer {
+    background: #f0f0f0; border-top: 1px solid #ddd;
+    text-align: center; padding: 16px; font-size: 12px; color: #666;
+    margin-top: auto;
+  }
+  .footer a { color: #1565C0; text-decoration: none; }
+
+  /* ========== PROPERTY DETAILS ========== */
+  .loan-calc-field {
+    background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;
+    padding: 10px 12px; font-size: 14px; color: #333;
+  }
+
+  /* ========== MULTI-SELECT DROPDOWN ========== */
+  .multi-select-wrapper { position: relative; }
+  .multi-select-display {
+    width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 4px;
+    font-size: 14px; color: #333; background: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    min-height: 42px; flex-wrap: wrap;
+  }
+  .multi-select-display:focus { outline: none; border-color: #C8102E; }
+  .multi-tag {
+    background: #C8102E; color: #fff; border-radius: 3px;
+    padding: 2px 8px; font-size: 12px; display: flex; align-items: center; gap: 4px;
+  }
+  .multi-tag button { background: none; border: none; color: #fff; cursor: pointer; font-size: 14px; padding: 0; line-height: 1; }
+  .multi-dropdown {
+    position: absolute; top: 100%; left: 0; right: 0; background: #fff;
+    border: 1px solid #ccc; border-top: none; border-radius: 0 0 4px 4px;
+    z-index: 50; display: none; max-height: 200px; overflow-y: auto;
+  }
+  .multi-dropdown.open { display: block; }
+  .multi-option {
+    padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+    font-size: 14px; color: #333;
+  }
+  .multi-option:hover { background: #f5f5f5; }
+  .multi-option input[type=checkbox] { accent-color: #C8102E; }
+  .multi-chevron { flex-shrink: 0; font-size: 10px; color: #666; }
+
+  /* ========== EXPENSES TOGGLES ========== */
+  .expense-toggle {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; cursor: pointer; border-bottom: 1px solid #f0f0f0;
+  }
+  .expense-toggle-icon {
+    width: 22px; height: 22px; border-radius: 50%; border: 1px solid #C8102E;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #C8102E; flex-shrink: 0; font-weight: 700;
+  }
+  .expense-toggle-icon.open { background: #C8102E; color: #fff; }
+  .expense-toggle-label { font-size: 14px; color: #333; }
+  .expense-sub { padding: 12px 0 4px 32px; display: none; }
+  .expense-sub.open { display: block; }
+
+  /* ========== DOCUMENT UPLOAD ========== */
+  .doc-row {
+    border: 1px solid #ddd; border-radius: 4px; padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px; background: #fff;
+  }
+  .doc-row span { font-size: 14px; color: #333; }
+  .add-file-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: none; cursor: pointer; color: #555; font-size: 13px;
+  }
+  .add-file-btn:hover { color: #C8102E; }
+  .doc-actions { display: flex; gap: 16px; }
+
+  /* ========== OFFER SCREEN ========== */
+  .offer-card { border: 1px solid #ddd; border-radius: 6px; padding: 0; overflow: hidden; margin-bottom: 24px; }
+  .offer-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 14px 20px; border-bottom: 1px solid #eee; font-size: 14px;
+  }
+  .offer-row:last-child { border-bottom: none; }
+  .offer-row-label { color: #555; }
+  .offer-row-label small { display: block; font-size: 12px; color: #888; margin-top: 2px; }
+  .offer-row-value { font-weight: 600; color: #222; text-align: right; }
+
+  /* ========== CONGRATULATIONS ========== */
+  .congrats-screen {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 24px; text-align: center;
+  }
+  .congrats-icon { font-size: 80px; margin-bottom: 24px; }
+  .congrats-screen h1 { font-size: 32px; font-weight: 700; color: #222; margin-bottom: 12px; }
+  .congrats-screen p { font-size: 16px; color: #555; margin-bottom: 32px; }
+
+  /* ========== PROCESSING ========== */
+  .processing-screen {
+    flex: 1; background-size: cover; background-position: center;
+    display: flex; align-items: center; justify-content: center; padding: 40px;
+    background-color: #8a9ba5;
+    background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3));
+  }
+  .processing-card {
+    background: #fff; border-radius: 8px; padding: 40px 48px;
+    display: flex; align-items: center; gap: 28px; max-width: 620px; width: 100%;
+  }
+  .processing-icon { font-size: 52px; flex-shrink: 0; }
+  .processing-card h2 { font-size: 26px; font-weight: 600; color: #222; }
+  .processing-card p { font-size: 14px; color: #666; margin-top: 6px; }
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid #eee; border-top-color: #C8102E; border-radius: 50%;
+    animation: spin 0.8s linear infinite; vertical-align: middle; margin-left: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ========== COMPLETE SCREEN ========== */
+  .complete-screen {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 60px 24px; text-align: center;
+    background: #fff;
+  }
+  .complete-icon { font-size: 80px; margin-bottom: 24px; }
+  .complete-screen h1 { font-size: 28px; font-weight: 700; color: #222; margin-bottom: 12px; }
+  .complete-screen p { font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 8px; }
+  .complete-screen .track-link { color: #1565C0; }
+
+  /* ========== INLINE INPUT PAIR ========== */
+  .input-with-btn { display: flex; gap: 8px; }
+  .input-with-btn input { flex: 1; }
+
+  /* ========== ADDRESS FIELD ========== */
+  .address-input-wrap { position: relative; }
+  .address-input-wrap .loc-icon {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    color: #888; font-size: 14px;
+  }
+  .address-input-wrap input { padding-left: 28px; }
+  .manual-link { color: #1565C0; font-size: 13px; cursor: pointer; margin-top: 6px; display: inline-block; }
+  .manual-link:hover { text-decoration: underline; }
+
+  /* ========== TOTAL ROW ========== */
+  .total-row {
+    font-size: 16px; font-weight: 700; color: #222; margin: 16px 0;
+    padding-top: 12px; border-top: 2px solid #eee;
+  }
+
+  /* Section grouping */
+  .section-divider { margin: 28px 0 20px; }
+  .section-divider h3 { font-size: 16px; font-weight: 700; color: #222; }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 700px) {
+    .main-content { flex-direction: column; }
+    .sidebar { width: 100%; }
+    .hero h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SCREEN 1: LANDING PAGE (Before We Begin - empty)
+============================================================ -->
+<div id="screen-landing" class="screen active">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application</span>
+    </div>
+  </header>
+  <div class="landing-bg">
+    <div class="landing-card">
+      <h1>Before we begin</h1>
+
+      <div class="field-group">
+        <label class="field-label">What would you like to do</label>
+        <div class="select-wrapper">
+          <select id="landing-purpose" onchange="checkLandingDropdowns()">
+            <option value="">Select</option>
+            <option value="buy">Buy a home</option>
+            <option value="build">Build a home</option>
+            <option value="land">Buy vacant land</option>
+            <option value="switch">Switch my home loan to Absa</option>
+            <option value="landbuild">Buy vacant land and build a home</option>
+            <option value="funds">Apply for funds from your Absa home loan</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">How will you be applying?</label>
+        <div class="select-wrapper">
+          <select id="landing-applying" onchange="checkLandingDropdowns()">
+            <option value="">Select</option>
+            <option value="myself">By myself</option>
+            <option value="joint">With one or more people</option>
+            <option value="business">Through a business</option>
+            <option value="trust">Through a trust</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="landing-identity-section" style="display:none;">
+        <h2>Welcome! We're glad you're here</h2>
+
+        <div class="field-group">
+          <label class="field-label">Identity type</label>
+          <div class="select-wrapper">
+            <select>
+              <option value="">Select</option>
+              <option value="sa">SA identity</option>
+              <option value="passport">Passport</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Your SA identity number</label>
+          <input type="text" id="id-number" value="8902221233455" class="filled">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Title</label>
+          <div class="select-wrapper">
+            <select>
+              <option value="">Select</option>
+              <option value="mr">Mr</option>
+              <option value="mrs">Mrs</option>
+              <option value="ms">Ms</option>
+              <option value="dr">Dr</option>
+              <option value="prof">Prof</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">First and middle names (as on your identity document)</label>
+          <input type="text" id="first-name" value="John" class="filled">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Surname</label>
+          <input type="text" id="surname" value="Khumalo" class="filled">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Cellphone</label>
+          <input type="tel" id="cellphone" value="0712345678" class="filled">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input type="email" id="email" value="John@absa.africa" class="filled">
+        </div>
+
+        <div id="captcha-section">
+          <p style="font-size:13px;font-weight:600;margin-bottom:10px;">Help us keep your information safe</p>
+          <div class="captcha-img" id="captcha-display">QUE4MMF</div>
+          <div class="captcha-actions">
+            <button class="captcha-btn" onclick="refreshCaptcha()" title="Refresh">🔄</button>
+            <button class="captcha-btn" title="Audio">🔊</button>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Enter the text displayed above</label>
+            <div class="input-with-btn">
+              <input type="text" id="captcha-input" placeholder="e.g. ABCDEFG">
+              <button class="btn-dark" onclick="verifyCaptcha()">Verify</button>
+            </div>
+          </div>
+          <div id="captcha-success" style="display:none;">
+            <div class="success-state">
+              <div class="thumbs-circle">👍</div>
+              <h2>Great, let's continue</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="landing-agree-section" style="display:none;">
+        <p style="font-size:14px;font-weight:600;margin-bottom:12px;">Please agree to the following</p>
+        <div class="check-item">
+          <span class="check-icon">✓</span>
+          <span class="check-text">I am not currently insolvent, receiving debt counselling or have a pending debt review or insolvency application.</span>
+        </div>
+        <div class="check-item">
+          <span class="check-icon">✓</span>
+          <span class="check-text">I have read and accept the <a href="#">Privacy Statement</a>.</span>
+        </div>
+        <div class="check-item">
+          <span class="check-icon">✓</span>
+          <span class="check-text">Absa may contact me using Whatsapp regarding the product or service I'm applying for.</span>
+        </div>
+        <div class="checkbox-row" style="margin-top:12px;">
+          <input type="checkbox" id="agree-landing" onchange="toggleLandingContinue()">
+          <label for="agree-landing">I have read and agreed to the above</label>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-top:24px;padding-top:20px;border-top:1px solid #eee;">
+        <button class="btn-primary" id="landing-continue-btn" disabled onclick="goToScreen('screen-otp-1')">Continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 2: OTP STEP 1 — Enter cellphone
+============================================================ -->
+<div id="screen-otp-1" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application</span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Quick Security check</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-dot active"><span>1</span></div>
+          <span class="step-label active">Security check</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">OTP</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel">Application assistance</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item">
+          <div class="step-dot"><span>2</span></div>
+          <span class="step-label">Property details</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item">
+          <div class="step-dot"><span>3</span></div>
+          <span class="step-label">Details</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item">
+          <div class="step-dot"><span>4</span></div>
+          <span class="step-label">Finances</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item">
+          <div class="step-dot"><span>5</span></div>
+          <span class="step-label">Finishing up</span>
+        </li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Let's make sure your number is working</h2>
+      <div class="field-group">
+        <label class="field-label">Cellphone Number</label>
+        <div class="input-with-btn">
+          <input type="tel" id="otp-cellphone" placeholder="e.g. 082 211 1112">
+          <button class="btn-dark" onclick="sendPin()">Send PIN</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" style="background:#ccc;cursor:not-allowed;" disabled>Next</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 3: OTP STEP 2 — Enter OTP
+============================================================ -->
+<div id="screen-otp-2" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application</span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Quick Security check</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-dot active"><span>1</span></div>
+          <span class="step-label active">Security check</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">OTP</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel">Application assistance</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>2</span></div><span class="step-label">Property details</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>3</span></div><span class="step-label">Details</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>4</span></div><span class="step-label">Finances</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>5</span></div><span class="step-label">Finishing up</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Let's make sure your number is working</h2>
+      <div class="field-group">
+        <label class="field-label">Cellphone Number</label>
+        <div class="input-with-btn">
+          <input type="tel" value="082 211 1112" class="filled">
+          <button class="btn-dark">Re-send PIN</button>
+        </div>
+      </div>
+      <div class="success-box">
+        <span class="s-icon">✅</span>
+        <p>We've sent a One Time Pin to your phone</p>
+      </div>
+      <div class="field-group" style="margin-top:16px;">
+        <label class="field-label">Enter One Time PIN below</label>
+        <div class="input-with-btn">
+          <input type="text" id="otp-code" placeholder="eg.12345" maxlength="6">
+          <button class="btn-dark" onclick="verifyOtp()">Verify</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" style="background:#ccc;cursor:not-allowed;" id="otp2-next-btn" disabled>Next</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 4: OTP STEP 3 — Verified Success
+============================================================ -->
+<div id="screen-otp-3" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Quick Security check</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-dot active"><span>1</span></div>
+          <span class="step-label active">Security check</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">OTP</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel">Application assistance</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>2</span></div><span class="step-label">Property details</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>3</span></div><span class="step-label">Details</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>4</span></div><span class="step-label">Finances</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>5</span></div><span class="step-label">Finishing up</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Let's make sure your number is working</h2>
+      <div class="success-state">
+        <div class="thumbs-circle">👍</div>
+        <h2>Great, let's continue</h2>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goToScreen('screen-colleagues')">Next</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 5: RECOGNISE COLLEAGUES
+============================================================ -->
+<div id="screen-colleagues" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Quick Security check</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-dot active"><span>1</span></div>
+          <span class="step-label active">Security check</span>
+        </li>
+        <div class="step-connector done"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel done">OTP</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">Application assistance</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>2</span></div><span class="step-label">Property details</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>3</span></div><span class="step-label">Details</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>4</span></div><span class="step-label">Finances</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>5</span></div><span class="step-label">Finishing up</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Recognise our colleagues</h2>
+      <div class="field-group">
+        <p style="font-size:14px;color:#333;margin-bottom:14px;">Did an Absa staff member assist you with your application?</p>
+        <div class="toggle-group" id="colleagues-toggle">
+          <button class="toggle-btn" id="col-yes" onclick="selectColleague('yes')">Yes</button>
+          <button class="toggle-btn active" id="col-no" onclick="selectColleague('no')">No</button>
+        </div>
+      </div>
+      <div id="colleague-staff-section" style="display:none; margin-top:16px;">
+        <div class="field-group">
+          <label class="field-label">Staff member's name</label>
+          <input type="text" placeholder="e.g. Jane Smith">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Staff member's employee number</label>
+          <input type="text" placeholder="e.g. 12345">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goToScreen('screen-property')">Save and Continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 6: PROPERTY DETAILS
+============================================================ -->
+<div id="screen-property" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Property details</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Security check</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item">
+          <div class="step-dot active"><span>2</span></div>
+          <span class="step-label active">Property details</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">About the property</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>3</span></div><span class="step-label">Details</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>4</span></div><span class="step-label">Finances</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>5</span></div><span class="step-label">Finishing up</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Tell us about the property</h2>
+
+      <div class="field-group">
+        <p style="font-size:14px;color:#333;margin-bottom:10px;">Do you have an offer to purchase for the property you want to buy?</p>
+        <div class="toggle-group">
+          <button class="toggle-btn" id="otp-yes" onclick="selectPurchase('yes')">Yes</button>
+          <button class="toggle-btn active" id="otp-no" onclick="selectPurchase('no')">No</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">What is the property type? <span style="color:#1565C0;font-size:12px;cursor:pointer;" title="More info">ℹ</span></label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">What type of roof does the property have?</label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">What type of walls does the property have?</label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <p style="font-size:14px;color:#333;margin-bottom:10px;">Is there any thatch structure on the property?</p>
+        <div class="radio-row"><input type="radio" name="thatch" id="thatch-yes" checked><label for="thatch-yes">Yes</label></div>
+        <div class="radio-row"><input type="radio" name="thatch" id="thatch-no"><label for="thatch-no">No</label></div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">What is the purchase price of the property?</label>
+        <input type="text" value="R 1 200 000.00" class="filled">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Do you have a deposit to put down? (optional) <span style="color:#1565C0;font-size:12px;cursor:pointer;">ℹ</span></label>
+        <input type="text" value="R 1 200 000.00" class="filled">
+        <div class="field-hint">ℹ Putting down a deposit, even a minimal amount could help you get a better interest rate</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">The loan amount you are applying for</label>
+        <div class="loan-calc-field">R 1 200 000.00</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">How long would you like your term to be? <span style="color:#1565C0;font-size:12px;cursor:pointer;">ℹ</span></label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+        <div class="field-hint">ℹ A longer term allows for lower monthly repayments, but will increase the interest to be paid over time.</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">How will the property be occupied?</label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-divider">
+        <h3>The property address</h3>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Find your address</label>
+        <div class="address-input-wrap">
+          <span class="loc-icon">📍</span>
+          <input type="text" placeholder="e.g. 15 Alice lane, Sandton, 2021" style="padding-left:28px;">
+        </div>
+        <a class="manual-link">I can't find the address, I will type it in manually</a>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goToScreen('screen-personal')">Continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 7: PERSONAL DETAILS
+============================================================ -->
+<div id="screen-personal" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Personal details</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Security check</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Property details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item">
+          <div class="step-dot active"><span>3</span></div>
+          <span class="step-label active">Details</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">Personal</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel">Nationality</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel">Employment</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>4</span></div><span class="step-label">Finances</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>5</span></div><span class="step-label">Finishing up</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Tell us a bit about yourself</h2>
+      <div class="field-group">
+        <label class="field-label">Race</label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+        <div class="info-box" style="margin-top:10px;">
+          <span class="info-icon">ℹ</span>
+          <p>Please note: All financial institutions are required to request information regarding race to assist government in monitoring lending practices in terms of the Home Loan and Mortgage Disclosure Act, 2000. It will have no affect on the outcome of your home loan application.</p>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Marital status</label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goToScreen('screen-nationality')">Continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 8: NATIONALITY
+============================================================ -->
+<div id="screen-nationality" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Nationality</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Security check</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Property details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item">
+          <div class="step-dot active"><span>3</span></div>
+          <span class="step-label active">Details</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel done">Personal</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">Nationality</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel">Employment</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>4</span></div><span class="step-label">Finances</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>5</span></div><span class="step-label">Finishing up</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Your Nationality</h2>
+      <div class="field-group">
+        <label class="field-label">Nationality</label>
+        <input type="text" placeholder="e.g. South African">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Country of birth</label>
+        <input type="text" placeholder="e.g. South Africa">
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goToScreen('screen-employment')">Continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 9: EMPLOYMENT DETAILS
+============================================================ -->
+<div id="screen-employment" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Employment details</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Security check</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Property details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item">
+          <div class="step-dot active"><span>3</span></div>
+          <span class="step-label active">Details</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel done">Personal</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel done">Nationality</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">Employment</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>4</span></div><span class="step-label">Finances</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>5</span></div><span class="step-label">Finishing up</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Your current employment details</h2>
+      <div class="field-group">
+        <label class="field-label">How are you currently employed?</label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Occupation</label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Industry</label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">What is the highest qualification level you have?</label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Your employer's details</h3>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Company name</label>
+        <input type="text" value="Sage" class="filled">
+      </div>
+
+      <div class="section-divider">
+        <h3>Your work address</h3>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Street address</label>
+        <div class="address-input-wrap">
+          <span class="loc-icon">📍</span>
+          <input type="text" value="Alice Lane, Sandhurst, Sandton, South Africa" class="filled" style="padding-left:28px;">
+        </div>
+        <a class="manual-link">I can't find my address, I will type it manually</a>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goToScreen('screen-income')">Save and continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 10: INCOME
+============================================================ -->
+<div id="screen-income" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Income</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Security check</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Property details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item">
+          <div class="step-dot active"><span>4</span></div>
+          <span class="step-label active">Finances</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">Income</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel">Loan and credit repayments</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel">Monthly expenses</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>5</span></div><span class="step-label">Finishing up</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Your monthly income</h2>
+      <div class="field-group">
+        <label class="field-label">Which bank is your main income/salary deposited into?</label>
+        <div class="select-wrapper">
+          <select>
+            <option value="">Select</option>
+            <option>Insert text here</option>
+            <option>Insert text here</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">What are your monthly source(s) of income? (You can select up to 5)</label>
+        <div class="multi-select-wrapper">
+          <div class="multi-select-display" id="income-display" onclick="toggleIncomeDropdown()">
+            <div id="income-tags" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;">
+              <div class="multi-tag">Salary/wages <button onclick="event.stopPropagation();removeIncomeTag('Salary/wages')">×</button></div>
+            </div>
+            <span class="multi-chevron">▲</span>
+          </div>
+          <div class="multi-dropdown open" id="income-dropdown">
+            <label class="multi-option"><input type="checkbox" checked onchange="toggleIncomeOpt(this,'Salary/wages')"> Salary/wages</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleIncomeOpt(this,'Commission')"> Commission</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleIncomeOpt(this,'Maintenance/alimony')"> Maintenance/alimony</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleIncomeOpt(this,'Pension')"> Pension</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Monthly gross salary</label>
+        <input type="text" value="R 100 000.00" class="filled">
+        <div class="field-hint">Your gross salary is the amount you earn prior to any deductions made</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Monthly net salary</label>
+        <input type="text" value="R 70 000.00" class="filled">
+        <div class="field-hint">Your net salary income is the amount deposited into your account after deductions</div>
+      </div>
+      <div class="field-group">
+        <p style="font-size:14px;font-weight:600;color:#222;margin-bottom:10px;">Do you have additional sources of income that you will use to pay off this home loan?</p>
+        <div class="toggle-group">
+          <button class="toggle-btn" onclick="selectAdditionalIncome('yes')">Yes</button>
+          <button class="toggle-btn active" id="add-inc-no" onclick="selectAdditionalIncome('no')">No</button>
+        </div>
+      </div>
+      <div class="total-row">Total net income: R 70 000.00</div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goToScreen('screen-loan-credit')">Save and continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 11: LOAN & CREDIT REPAYMENTS
+============================================================ -->
+<div id="screen-loan-credit" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Loan and credit repayments</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Security check</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Property details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item">
+          <div class="step-dot active"><span>4</span></div>
+          <span class="step-label active">Finances</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel done">Income</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">Loan and credit repayments</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel">Monthly expenses</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>5</span></div><span class="step-label">Finishing up</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Your monthly loan and credit repayments</h2>
+      <p style="font-size:13px;color:#666;margin-bottom:20px;">Only fill in the repayments that apply to you</p>
+
+      <div class="field-group">
+        <label class="field-label">Monthly vehicle or asset finance repayment(s) <span style="color:#1565C0;font-size:12px;cursor:pointer;">ℹ</span></label>
+        <input type="text" value="R 4 000" class="filled">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Monthly Loan or overdraft repayment(s) <span style="color:#1565C0;font-size:12px;cursor:pointer;">ℹ</span></label>
+        <input type="text" placeholder="R 0.00">
+        <div class="field-hint">e.g. Personal loans, Study loans etc.</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Monthly retail account repayment(s) <span style="color:#1565C0;font-size:12px;cursor:pointer;">ℹ</span></label>
+        <input type="text" value="R 1 000" class="filled">
+        <div class="field-hint">e.g. Edgars, PnP, Woolworths etc.</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Monthly credit card(s) repayment and/or fee <span style="color:#1565C0;font-size:12px;cursor:pointer;">ℹ</span></label>
+        <input type="text" value="R 5 000" class="filled">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Existing monthly home loan repayment(s) <span style="color:#1565C0;font-size:12px;cursor:pointer;">ℹ</span></label>
+        <input type="text" value="R 14 000" class="filled">
+      </div>
+      <div class="total-row">Total loan and credit repayments: R 24 000.00</div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goToScreen('screen-expenses')">Save and continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 12: MONTHLY EXPENSES
+============================================================ -->
+<div id="screen-expenses" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Monthly expenses</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Security check</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Property details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item">
+          <div class="step-dot active"><span>4</span></div>
+          <span class="step-label active">Finances</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel done">Income</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel done">Loan and credit repayments</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">Monthly expenses</span></li>
+        <div class="step-connector"></div>
+        <li class="step-item"><div class="step-dot"><span>5</span></div><span class="step-label">Finishing up</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Monthly expenses</h2>
+      <p style="font-size:13px;color:#666;margin-bottom:20px;">Only fill in the expenses that apply to you</p>
+
+      <div class="field-group">
+        <label class="field-label">Monthly grocery amount</label>
+        <input type="text" value="R 6 000" class="filled">
+        <div class="field-hint">Household food, personal hygiene etc.</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Monthly fuel and transport amount</label>
+        <input type="text" value="R 4 000" class="filled">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Monthly phone and internet amount</label>
+        <input type="text" value="R 500" class="filled">
+        <div class="field-hint">e.g. cellphone contract, data, airtime and wifi</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Monthly Leisure, shopping and entertainment</label>
+        <input type="text" value="R 1 000" class="filled">
+        <div class="field-hint">e.g. Movies, restaurants, outings, retail shopping etc.</div>
+      </div>
+
+      <p style="font-size:15px;font-weight:700;color:#222;margin:24px 0 12px;">Do you have any of the below additional monthly expenses?</p>
+
+      <!-- DSTV -->
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('dstv')">
+          <div class="expense-toggle-icon open" id="dstv-icon">✕</div>
+          <span class="expense-toggle-label">DSTV, Netflix or Showmax</span>
+        </div>
+        <div class="expense-sub open" id="dstv-sub">
+          <div class="field-group">
+            <label class="field-label">Monthly DSTV, Netflix or Showmax amount</label>
+            <input type="text" value="R 1 000" class="filled">
+          </div>
+        </div>
+      </div>
+
+      <!-- Medical Aid -->
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('medical')">
+          <div class="expense-toggle-icon open" id="medical-icon">✕</div>
+          <span class="expense-toggle-label">Medical aid</span>
+        </div>
+        <div class="expense-sub open" id="medical-sub">
+          <div class="field-group">
+            <label class="field-label">Monthly medical aid amount</label>
+            <input type="text" value="R 4 000" class="filled">
+          </div>
+          <div class="field-group">
+            <p style="font-size:14px;color:#333;margin-bottom:8px;">Does your company deduct your medical aid from your salary each month?</p>
+            <div class="radio-row"><input type="radio" name="med-deduct" id="med-yes"><label for="med-yes">Yes</label></div>
+            <div class="radio-row"><input type="radio" name="med-deduct" id="med-no"><label for="med-no">No</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Water & Electricity -->
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('water')">
+          <div class="expense-toggle-icon open" id="water-icon">✕</div>
+          <span class="expense-toggle-label">Water and electricity</span>
+        </div>
+        <div class="expense-sub open" id="water-sub">
+          <div class="field-group">
+            <label class="field-label">Monthly water and electricity amount</label>
+            <input type="text" value="R 2 000" class="filled">
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional items (collapsed by default) -->
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('family')">
+          <div class="expense-toggle-icon" id="family-icon">+</div>
+          <span class="expense-toggle-label">Family and child support</span>
+        </div>
+        <div class="expense-sub" id="family-sub">
+          <div class="field-group">
+            <label class="field-label">Monthly family and child support amount</label>
+            <input type="text" placeholder="R 0.00">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('insurance')">
+          <div class="expense-toggle-icon" id="insurance-icon">+</div>
+          <span class="expense-toggle-label">Insurance policies</span>
+        </div>
+        <div class="expense-sub" id="insurance-sub">
+          <div class="field-group">
+            <label class="field-label">Monthly insurance amount</label>
+            <input type="text" placeholder="R 0.00">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('rent')">
+          <div class="expense-toggle-icon" id="rent-icon">+</div>
+          <span class="expense-toggle-label">Rent</span>
+        </div>
+        <div class="expense-sub" id="rent-sub">
+          <div class="field-group">
+            <label class="field-label">Monthly rent amount</label>
+            <input type="text" placeholder="R 0.00">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('school')">
+          <div class="expense-toggle-icon" id="school-icon">+</div>
+          <span class="expense-toggle-label">School fees and education</span>
+        </div>
+        <div class="expense-sub" id="school-sub">
+          <div class="field-group">
+            <label class="field-label">Monthly school fees and education amount</label>
+            <input type="text" placeholder="R 0.00">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('security')">
+          <div class="expense-toggle-icon" id="security-icon">+</div>
+          <span class="expense-toggle-label">Security</span>
+        </div>
+        <div class="expense-sub" id="security-sub">
+          <div class="field-group">
+            <label class="field-label">Monthly security amount</label>
+            <input type="text" placeholder="R 0.00">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('cleaning')">
+          <div class="expense-toggle-icon" id="cleaning-icon">+</div>
+          <span class="expense-toggle-label">Cleaning, gardening and childminding services</span>
+        </div>
+        <div class="expense-sub" id="cleaning-sub">
+          <div class="field-group">
+            <label class="field-label">Monthly cleaning/gardening/childminding amount</label>
+            <input type="text" placeholder="R 0.00">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('rates')">
+          <div class="expense-toggle-icon" id="rates-icon">+</div>
+          <span class="expense-toggle-label">Rates, Taxes and levies</span>
+        </div>
+        <div class="expense-sub" id="rates-sub">
+          <div class="field-group">
+            <label class="field-label">Monthly rates, taxes and levies amount</label>
+            <input type="text" placeholder="R 0.00">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="expense-toggle" onclick="toggleExpense('other')">
+          <div class="expense-toggle-icon" id="other-icon">+</div>
+          <span class="expense-toggle-label">Other expenses</span>
+        </div>
+        <div class="expense-sub" id="other-sub">
+          <div class="field-group">
+            <label class="field-label">Other monthly expenses amount</label>
+            <input type="text" placeholder="R 0.00">
+          </div>
+        </div>
+      </div>
+
+      <div class="total-row">Total monthly expenses: R 18 500.00</div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goToScreen('screen-declaration')">Save and continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 13: DECLARATION
+============================================================ -->
+<div id="screen-declaration" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Declaration</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Security check</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Property details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Finances</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item">
+          <div class="step-dot active"><span>5</span></div>
+          <span class="step-label active">Finishing up</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">Declaration</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel">Upload documents</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Just a few legalities before we carry on</h2>
+      <div style="margin-bottom:20px;">
+        <div class="check-item"><span class="check-icon">✓</span><span class="check-text">I understand that this home loan application will be based entirely on the information I provided.</span></div>
+        <div class="check-item"><span class="check-icon">✓</span><span class="check-text">I have provided true and correct information.</span></div>
+        <div class="check-item"><span class="check-icon">✓</span><span class="check-text">I understand the loan amount I am applying for may not include additional fees such as lawyer fees.</span></div>
+        <div class="check-item"><span class="check-icon">✓</span><span class="check-text">I have provided my correct income, repayment and expenditure amounts.</span></div>
+        <div class="check-item"><span class="check-icon">✓</span><span class="check-text">I have read and fully understand this declaration and what it means. <a href="#" style="color:#1565C0;">Read the declaration</a></span></div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="decl-agree" onchange="toggleDeclBtn()">
+        <label for="decl-agree">I agree to the above</label>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" id="decl-btn" disabled onclick="goToScreen('screen-documents')">Save and Continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 14: DOCUMENT UPLOAD
+============================================================ -->
+<div id="screen-documents" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan Application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+    </div>
+  </header>
+  <div class="hero"><h1>Document upload</h1></div>
+  <div class="main-content">
+    <nav class="sidebar">
+      <ul class="step-list">
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Security check</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Property details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Details</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item"><div class="step-dot done"></div><span class="step-label done">Finances</span></li>
+        <div class="step-connector done"></div>
+        <li class="step-item">
+          <div class="step-dot active"><span>5</span></div>
+          <span class="step-label active">Finishing up</span>
+        </li>
+        <div class="step-connector"></div>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel done">Declaration</span></li>
+        <li class="step-item" style="padding-left:48px;"><span class="step-sublabel active">Upload documents</span></li>
+      </ul>
+    </nav>
+    <div class="form-area">
+      <h2 class="form-section-title">Send us your documents by no later than 2024/04/30</h2>
+
+      <div style="display:flex;gap:16px;align-items:flex-start;background:#f9f9f9;border:1px solid #e0e0e0;border-radius:6px;padding:20px;margin-bottom:28px;">
+        <div style="font-size:36px;">📋</div>
+        <div>
+          <p style="font-size:14px;font-weight:600;margin-bottom:10px;">Make sure each document is:</p>
+          <div class="field-hint" style="margin:4px 0;">📄 Not bigger than 14MB</div>
+          <div class="field-hint" style="margin:4px 0;">📄 PDF, JPG, TIF or GIF format</div>
+          <div class="field-hint" style="margin:4px 0;">🔒 Not password protected</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:16px;font-weight:700;color:#222;margin-bottom:12px;">General documents</h3>
+      <div class="doc-row">
+        <span>Offer to purchase</span>
+        <button class="add-file-btn" onclick="simulateUpload(this)">+ Add files</button>
+      </div>
+      <div class="doc-row">
+        <span>Copy of ID documents or card (front & back)</span>
+        <button class="add-file-btn" onclick="simulateUpload(this)">+ Add files</button>
+      </div>
+
+      <h3 style="font-size:16px;font-weight:700;color:#222;margin:20px 0 12px;">Income documents</h3>
+      <div class="doc-row">
+        <span>Payslip - Not older than 60 days</span>
+        <button class="add-file-btn" onclick="simulateUpload(this)">+ Add files</button>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">ℹ</span>
+        <p><strong>Important:</strong> If you bank with Nedbank, Standard Bank, Absa or African Bank we can get your bank statements for you at no charge.</p>
+      </div>
+      <div class="doc-row">
+        <span>Bank statements - last 3 months</span>
+        <div class="doc-actions">
+          <button class="add-file-btn" onclick="simulateUpload(this)">+ Add files</button>
+          <button class="add-file-btn" style="color:#1565C0;">📥 Fetch for me</button>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goToScreen('screen-processing')">Save and continue</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 15: PROCESSING
+============================================================ -->
+<div id="screen-processing" class="screen" style="background:#7a8f9a;">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan Application <span style="color:#666;">| Application number 44002194346</span></span>
+    </div>
+  </header>
+  <div class="processing-screen">
+    <div class="processing-card">
+      <div class="processing-icon">📋</div>
+      <div>
+        <h2>Processing your application <span class="spinner"></span></h2>
+        <p>You're so close to the finish line, only a few seconds to go!</p>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security centre</a> |
+    © Copyright. Absa Bank Limited, Registration Number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 16: SUCCESS / CONGRATULATIONS
+============================================================ -->
+<div id="screen-success" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan Application <span>| Reference number: 01234567890</span></span>
+    </div>
+  </header>
+  <div class="congrats-screen">
+    <div class="congrats-icon">🎉</div>
+    <h1>Congratulations! You've been approved for your home loan</h1>
+    <p>We have an offer waiting for you!</p>
+    <div style="border-top:1px solid #eee;width:100%;max-width:700px;padding-top:24px;">
+      <div style="display:flex;justify-content:flex-end;">
+        <button class="btn-primary" onclick="goToScreen('screen-offer')">View the full offer</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 17: CONDITIONAL OFFER
+============================================================ -->
+<div id="screen-offer" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan Application <span>| Reference number: 01234567890</span></span>
+    </div>
+    <div class="header-right">
+      <div class="header-user">Good Morning Susan <div class="user-icon">👤</div></div>
+      <div class="divider-v"></div>
+      <button class="logout-btn">→ Log out</button>
+    </div>
+  </header>
+  <div class="hero"><h1>Home loan offer</h1></div>
+  <div style="max-width:780px;margin:0 auto;padding:32px 24px;flex:1;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+      <div style="width:60px;height:60px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:28px;">🏠</div>
+      <h2 style="font-size:22px;font-weight:700;color:#222;">Here's an offer for you</h2>
+    </div>
+    <p style="font-size:13px;color:#666;margin-bottom:20px;">This conditional offer is based on the information that you have provided which will need to be validated and is subject to a valuation of the property.</p>
+
+    <div class="offer-card">
+      <div class="offer-row"><span class="offer-row-label">Loan amount:</span><span class="offer-row-value">R 50 000.00</span></div>
+      <div class="offer-row">
+        <span class="offer-row-label">Your deposit amount:<small>This will need to be paid up front with the other additional costs.</small></span>
+        <span class="offer-row-value">R 300 000.00</span>
+      </div>
+      <div class="offer-row"><span class="offer-row-label">Interest Rate:</span><span class="offer-row-value">11%</span></div>
+      <div class="offer-row">
+        <span class="offer-row-label">Monthly repayments:<small>Excludes Homeowner's Comprehensive Insurance, Life Insurance and other additional monthly fees</small></span>
+        <span class="offer-row-value">R 4 560.00 pm</span>
+      </div>
+      <div class="offer-row"><span class="offer-row-label">Term:</span><span class="offer-row-value">16 years</span></div>
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;color:#222;margin-bottom:8px;">Estimated upfront costs</h3>
+    <p style="font-size:12px;color:#777;margin-bottom:16px;">This is a calculated estimate of the minimum payments that will need to be made before a further bond is registered.</p>
+
+    <div class="offer-card">
+      <div class="offer-row">
+        <span class="offer-row-label">Transfer costs:<small>Calculated on the purchase price</small></span>
+        <span class="offer-row-value">R 24 320.00</span>
+      </div>
+      <div class="offer-row">
+        <span class="offer-row-label">Transfer duty:<small>Calculated on the purchase price and on the assumption that the seller is not registered for VAT</small></span>
+        <span class="offer-row-value">R 24 720.00</span>
+      </div>
+      <div class="offer-row">
+        <span class="offer-row-label">Bond costs:<small>Calculated on the loan amount offered</small></span>
+        <span class="offer-row-value">R 24 320.00</span>
+      </div>
+      <div class="offer-row"><span class="offer-row-label">Initiation fee:</span><span class="offer-row-value">R 6 037.00</span></div>
+      <div class="offer-row">
+        <span class="offer-row-label" style="font-weight:700;">Total upfront costs:<small>Excludes attorney post and sundries.</small></span>
+        <span class="offer-row-value" style="font-weight:700;">R 88 357.00</span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <span class="info-icon">ℹ</span>
+      <p>This offer is valid until dd/mm/yyyy.</p>
+    </div>
+
+    <div style="border-top:1px solid #eee;margin-top:24px;padding-top:24px;display:flex;justify-content:flex-end;gap:12px;">
+      <button class="btn-secondary" onclick="alert('A consultant will contact you shortly.')">I need assistance</button>
+      <button class="btn-primary" onclick="goToScreen('screen-complete')">Continue with the offer</button>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 18: COMPLETE
+============================================================ -->
+<div id="screen-complete" class="screen">
+  <header class="header">
+    <div class="header-left">
+      <div class="absa-logo">absa</div>
+      <span class="header-title">Home Loan Application <span>| Reference number: 01234567890</span></span>
+    </div>
+  </header>
+  <div class="complete-screen">
+    <div class="complete-icon">👍</div>
+    <h1>Thank you for choosing to continue with the offer!</h1>
+    <p>We've received your offer response and will begin<br>the property valuation step of your application</p>
+    <p style="margin-top:12px;">Track the progress of your application anytime by visiting <a href="#" class="track-link">www.absa.co.za/track</a></p>
+    <div style="border-top:1px solid #eee;width:100%;max-width:700px;margin-top:32px;padding-top:24px;">
+      <div style="display:flex;justify-content:flex-end;">
+        <button class="btn-primary" onclick="alert('Redirecting to application tracker...')">Track my application</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <a href="#">Terms of use</a> | <a href="#">Banking regulations</a> | <a href="#">Privacy policy</a> | <a href="#">Security Centre</a> |
+    © Copyright. Absa Bank Limited, registration number 1986/004794/06. All rights reserved | Authorised Financial Services Provider and a registered credit provider (NCRCP7)
+  </footer>
+</div>
+
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+// -------- NAVIGATION --------
+function goToScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+  // Auto-advance from processing after 2.5s
+  if (id === 'screen-processing') {
+    setTimeout(() => goToScreen('screen-success'), 2500);
+  }
+}
+
+// -------- LANDING PAGE --------
+function checkLandingDropdowns() {
+  const purpose = document.getElementById('landing-purpose').value;
+  const applying = document.getElementById('landing-applying').value;
+  const section = document.getElementById('landing-identity-section');
+  const agreeSection = document.getElementById('landing-agree-section');
+  if (purpose && applying) {
+    section.style.display = 'block';
+    agreeSection.style.display = 'block';
+  } else {
+    section.style.display = 'none';
+    agreeSection.style.display = 'none';
+  }
+  toggleLandingContinue();
+}
+
+function toggleLandingContinue() {
+  const agree = document.getElementById('agree-landing');
+  const btn = document.getElementById('landing-continue-btn');
+  const captchaOk = document.getElementById('captcha-success').style.display !== 'none';
+  if (agree && agree.checked && captchaOk) {
+    btn.disabled = false;
+  } else {
+    btn.disabled = true;
+  }
+}
+
+function refreshCaptcha() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 7; i++) code += chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('captcha-display').textContent = code;
+  document.getElementById('captcha-input').value = '';
+  document.getElementById('captcha-success').style.display = 'none';
+}
+
+function verifyCaptcha() {
+  const input = document.getElementById('captcha-input').value.toUpperCase().trim();
+  const shown = document.getElementById('captcha-display').textContent.trim();
+  // For prototype, any input works
+  if (input.length >= 4) {
+    document.getElementById('captcha-section').style.display = 'none';
+    document.getElementById('captcha-success').style.display = 'block';
+    toggleLandingContinue();
+  } else {
+    document.getElementById('captcha-input').style.borderColor = '#C8102E';
+  }
+}
+
+// -------- OTP --------
+function sendPin() {
+  const num = document.getElementById('otp-cellphone').value.trim();
+  if (num.length >= 9) {
+    goToScreen('screen-otp-2');
+  } else {
+    document.getElementById('otp-cellphone').style.borderColor = '#C8102E';
+    document.getElementById('otp-cellphone').placeholder = 'Please enter a valid number';
+  }
+}
+
+function verifyOtp() {
+  const code = document.getElementById('otp-code').value.trim();
+  if (code.length >= 4) {
+    goToScreen('screen-otp-3');
+  } else {
+    document.getElementById('otp-code').style.borderColor = '#C8102E';
+  }
+}
+
+// -------- COLLEAGUES --------
+function selectColleague(val) {
+  document.getElementById('col-yes').classList.toggle('active', val === 'yes');
+  document.getElementById('col-no').classList.toggle('active', val === 'no');
+  document.getElementById('colleague-staff-section').style.display = val === 'yes' ? 'block' : 'none';
+}
+
+// -------- PROPERTY --------
+function selectPurchase(val) {
+  document.getElementById('otp-yes').classList.toggle('active', val === 'yes');
+  document.getElementById('otp-no').classList.toggle('active', val === 'no');
+}
+
+// -------- INCOME MULTI-SELECT --------
+let incomeSelected = ['Salary/wages'];
+
+function toggleIncomeDropdown() {
+  const dd = document.getElementById('income-dropdown');
+  dd.classList.toggle('open');
+  const chevron = document.querySelector('#income-display .multi-chevron');
+  chevron.textContent = dd.classList.contains('open') ? '▲' : '▼';
+}
+
+function toggleIncomeOpt(cb, label) {
+  if (cb.checked) {
+    if (!incomeSelected.includes(label)) incomeSelected.push(label);
+  } else {
+    incomeSelected = incomeSelected.filter(x => x !== label);
+  }
+  renderIncomeTags();
+}
+
+function removeIncomeTag(label) {
+  incomeSelected = incomeSelected.filter(x => x !== label);
+  // Uncheck the checkbox
+  document.querySelectorAll('#income-dropdown .multi-option input').forEach(cb => {
+    if (cb.closest('label').textContent.trim() === label) cb.checked = false;
+  });
+  renderIncomeTags();
+}
+
+function renderIncomeTags() {
+  const container = document.getElementById('income-tags');
+  container.innerHTML = incomeSelected.map(l =>
+    `<div class="multi-tag">${l} <button onclick="event.stopPropagation();removeIncomeTag('${l}')">×</button></div>`
+  ).join('');
+}
+
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('income-dropdown');
+  const display = document.getElementById('income-display');
+  if (dd && !dd.contains(e.target) && !display.contains(e.target)) {
+    dd.classList.remove('open');
+    const chevron = document.querySelector('#income-display .multi-chevron');
+    if (chevron) chevron.textContent = '▼';
+  }
+});
+
+// -------- ADDITIONAL INCOME --------
+function selectAdditionalIncome(val) {
+  document.querySelectorAll('.toggle-group .toggle-btn').forEach(b => {
+    if (b.id === 'add-inc-no') b.classList.toggle('active', val === 'no');
+    else if (b.textContent.trim() === 'Yes') b.classList.toggle('active', val === 'yes');
+  });
+}
+
+// -------- EXPENSES TOGGLES --------
+function toggleExpense(id) {
+  const icon = document.getElementById(id + '-icon');
+  const sub = document.getElementById(id + '-sub');
+  const isOpen = sub.classList.contains('open');
+  if (isOpen) {
+    sub.classList.remove('open');
+    icon.classList.remove('open');
+    icon.textContent = '+';
+  } else {
+    sub.classList.add('open');
+    icon.classList.add('open');
+    icon.textContent = '✕';
+  }
+}
+
+// -------- DECLARATION --------
+function toggleDeclBtn() {
+  const cb = document.getElementById('decl-agree');
+  const btn = document.getElementById('decl-btn');
+  btn.disabled = !cb.checked;
+  if (cb.checked) btn.style.background = '#F15A22';
+  else btn.style.background = '#ccc';
+}
+
+// -------- DOCUMENT UPLOAD --------
+function simulateUpload(btn) {
+  const row = btn.closest('.doc-row');
+  btn.textContent = '✓ document.pdf';
+  btn.style.color = '#2e7d32';
+  btn.disabled = true;
+}
+
+// -------- INITIAL OTP cellphone — enable next on type --------
+document.addEventListener('DOMContentLoaded', () => {
+  const otpCell = document.getElementById('otp-cellphone');
+  if (otpCell) {
+    otpCell.addEventListener('input', () => {
+      // handled by sendPin on button click
+    });
+  }
+
+  // OTP code — enable next when verified
+  const otpCode = document.getElementById('otp-code');
+  if (otpCode) {
+    otpCode.addEventListener('input', () => {
+      const btn = document.getElementById('otp2-next-btn');
+      // next only enables after clicking Verify
+    });
+  }
+});
+</script>
+</body>
+</html>
