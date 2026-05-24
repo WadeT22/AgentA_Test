@@ -265,10 +265,90 @@ select.input-error,
 .doc-file-input{display:none}
 
 
+
+/* ══ MOBILE HORIZONTAL STEPPER ═════════════════════════════════
+   Shown only on mobile (≤720px). Desktop sidebar fully unchanged.
+═══════════════════════════════════════════════════════════════ */
+.mobile-stepper{display:none}
+
 @media(max-width:720px){
-  .layout-b-body{flex-direction:column}
-  .sidebar{width:100%}
-  .layout-b-hero h1{font-size:24px}
+  /* ── HEADER: mobile layout ─────────────────────────────────── */
+  .header{
+    height:auto!important;
+    min-height:56px;
+    padding:10px 14px!important;
+    flex-wrap:nowrap;
+  }
+  .header-left{gap:10px}
+  /* Logo smaller on mobile */
+  .agenta-logo{width:38px!important;height:38px!important}
+
+  /* Title stacks onto two lines */
+  .header-title{
+    font-size:13px!important;
+    line-height:1.3;
+    display:flex;
+    flex-direction:column;
+  }
+  /* Reference number on its own line, no pipe */
+  .header-ref{
+    font-size:11px!important;
+    color:#888;
+    font-weight:400;
+    display:block!important;
+  }
+  /* Hide the " | " pipe character on mobile */
+  .ref-pipe{display:none!important}
+
+  /* Hide greeting and user icon on mobile */
+  .header-user{display:none!important}
+  .divider-v{display:none!important}
+
+  /* Keep Log out button, make it compact */
+  .logout-btn{font-size:13px!important;gap:4px!important}
+
+  /* ── SIDEBAR: hide on mobile ─────────────────────────────────── */
+  .sidebar{display:none!important}
+
+  /* Stack layout vertically on mobile */
+  .layout-b-body{flex-direction:column!important;gap:0!important;padding:20px 16px 32px!important}
+
+  /* Compact hero on mobile */
+  .layout-b-hero{height:100px!important;padding:0 20px!important}
+  .layout-b-hero h1{font-size:24px!important}
+
+  /* ── Mobile stepper container ── */
+  .mobile-stepper{
+    display:block!important;
+    background:#fff;
+    border-bottom:1px solid #ebebeb;
+    padding:14px 16px 16px;
+    margin:-20px -16px 20px;
+    width:calc(100% + 32px);
+  }
+  .mob-step-label{
+    font-size:13px;font-weight:700;color:#C8102E;
+    margin-bottom:2px;font-family:'Source Sans 3',sans-serif;
+  }
+  .mob-step-sublabel{
+    font-size:12px;color:#777;margin-bottom:12px;
+    font-family:'Source Sans 3',sans-serif;
+  }
+  .mob-step-track{display:flex;align-items:center;width:100%}
+  .mob-step-node{
+    width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;flex-shrink:0;
+    font-family:'Source Sans 3',sans-serif;
+    transition:background .2s;
+  }
+  .mob-step-node.mob-done{background:#C8102E;border:2px solid #C8102E;color:#fff}
+  .mob-step-node.mob-active{background:#C8102E;border:2px solid #C8102E;color:#fff}
+  .mob-step-node.mob-inactive{background:#fff;border:2px solid #d0d0d0;color:#aaa}
+  .mob-step-line{flex:1;height:2px;background:#d0d0d0;min-width:10px}
+  .mob-step-line.mob-line-done{background:#C8102E}
+
+  /* Other mobile tweaks */
   .layout-a-card{padding:28px 22px}
 }
 
@@ -353,6 +433,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Quick Security check</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot active"><span class="dot-num">1</span></div><span class="step-label active">Security check</span></li><div class="step-connector"></div><li class="sub-item active"><span class="sub-dot"></span>OTP</li><li class="sub-item"><span class="sub-dot"></span>Application assistance</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">2</span></div><span class="step-label">Property details</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">3</span></div><span class="step-label">Details</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">4</span></div><span class="step-label">Finances</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Let&#39;s make sure your number is working</h2>
@@ -374,6 +455,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Quick Security check</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot active"><span class="dot-num">1</span></div><span class="step-label active">Security check</span></li><div class="step-connector"></div><li class="sub-item active"><span class="sub-dot"></span>OTP</li><li class="sub-item"><span class="sub-dot"></span>Application assistance</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">2</span></div><span class="step-label">Property details</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">3</span></div><span class="step-label">Details</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">4</span></div><span class="step-label">Finances</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Let&#39;s make sure your number is working</h2>
@@ -389,7 +471,7 @@ select.input-error,
 </div>
 <div id="screen-otp-3" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -398,6 +480,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Quick Security check</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot active"><span class="dot-num">1</span></div><span class="step-label active">Security check</span></li><div class="step-connector"></div><li class="sub-item active"><span class="sub-dot"></span>OTP</li><li class="sub-item"><span class="sub-dot"></span>Application assistance</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">2</span></div><span class="step-label">Property details</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">3</span></div><span class="step-label">Details</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">4</span></div><span class="step-label">Finances</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Let&#39;s make sure your number is working</h2>
@@ -409,7 +492,7 @@ select.input-error,
 </div>
 <div id="screen-colleagues" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -418,6 +501,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Quick Security check</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot active"><span class="dot-num">1</span></div><span class="step-label active">Security check</span></li><div class="step-connector done"></div><li class="sub-item done"><span class="sub-dot"></span>OTP</li><li class="sub-item active"><span class="sub-dot"></span>Application assistance</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">2</span></div><span class="step-label">Property details</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">3</span></div><span class="step-label">Details</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">4</span></div><span class="step-label">Finances</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Recognise our colleagues</h2>
@@ -434,7 +518,7 @@ select.input-error,
 </div>
 <div id="screen-property" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -443,6 +527,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Property details</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Security check</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot active"><span class="dot-num">2</span></div><span class="step-label active">Property details</span></li><div class="step-connector"></div><li class="sub-item active"><span class="sub-dot"></span>About the property</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">3</span></div><span class="step-label">Details</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">4</span></div><span class="step-label">Finances</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Tell us about the property</h2>
@@ -505,7 +590,7 @@ select.input-error,
 </div>
 <div id="screen-personal" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -514,6 +599,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Personal details</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Security check</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Property details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot active"><span class="dot-num">3</span></div><span class="step-label active">Details</span></li><div class="step-connector"></div><li class="sub-item active"><span class="sub-dot"></span>Personal</li><li class="sub-item"><span class="sub-dot"></span>Nationality</li><li class="sub-item"><span class="sub-dot"></span>Employment</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">4</span></div><span class="step-label">Finances</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Tell us a bit about yourself</h2>
@@ -527,7 +613,7 @@ select.input-error,
 </div>
 <div id="screen-nationality" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -536,6 +622,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Nationality</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Security check</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Property details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot active"><span class="dot-num">3</span></div><span class="step-label active">Details</span></li><div class="step-connector"></div><li class="sub-item done"><span class="sub-dot"></span>Personal</li><li class="sub-item active"><span class="sub-dot"></span>Nationality</li><li class="sub-item"><span class="sub-dot"></span>Employment</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">4</span></div><span class="step-label">Finances</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Your Nationality</h2>
@@ -568,7 +655,7 @@ select.input-error,
 </div>
 <div id="screen-employment" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -577,6 +664,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Employment details</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Security check</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Property details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot active"><span class="dot-num">3</span></div><span class="step-label active">Details</span></li><div class="step-connector"></div><li class="sub-item done"><span class="sub-dot"></span>Personal</li><li class="sub-item done"><span class="sub-dot"></span>Nationality</li><li class="sub-item active"><span class="sub-dot"></span>Employment</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">4</span></div><span class="step-label">Finances</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Your current employment details</h2>
@@ -595,7 +683,7 @@ select.input-error,
 </div>
 <div id="screen-income" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -604,6 +692,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Income</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Security check</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Property details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot active"><span class="dot-num">4</span></div><span class="step-label active">Finances</span></li><div class="step-connector"></div><li class="sub-item active"><span class="sub-dot"></span>Income</li><li class="sub-item"><span class="sub-dot"></span>Loan and credit repayments</li><li class="sub-item"><span class="sub-dot"></span>Monthly expenses</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Your monthly income</h2>
@@ -646,7 +735,7 @@ select.input-error,
 </div>
 <div id="screen-loan-credit" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -655,6 +744,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Loan and credit repayments</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Security check</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Property details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot active"><span class="dot-num">4</span></div><span class="step-label active">Finances</span></li><div class="step-connector"></div><li class="sub-item done"><span class="sub-dot"></span>Income</li><li class="sub-item active"><span class="sub-dot"></span>Loan and credit repayments</li><li class="sub-item"><span class="sub-dot"></span>Monthly expenses</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Your monthly loan and credit repayments</h2>
@@ -672,7 +762,7 @@ select.input-error,
 </div>
 <div id="screen-expenses" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -681,6 +771,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Monthly expenses</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Security check</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Property details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot active"><span class="dot-num">4</span></div><span class="step-label active">Finances</span></li><div class="step-connector"></div><li class="sub-item done"><span class="sub-dot"></span>Income</li><li class="sub-item done"><span class="sub-dot"></span>Loan and credit repayments</li><li class="sub-item active"><span class="sub-dot"></span>Monthly expenses</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Monthly expenses</h2>
@@ -709,7 +800,7 @@ select.input-error,
 </div>
 <div id="screen-declaration" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -718,6 +809,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Declaration</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Security check</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Property details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Finances</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot active"><span class="dot-num">5</span></div><span class="step-label active">Finishing up</span></li><div class="step-connector"></div><li class="sub-item active"><span class="sub-dot"></span>Declaration</li><li class="sub-item"><span class="sub-dot"></span>Upload documents</li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Just a few legalities before we carry on</h2>
@@ -736,7 +828,7 @@ select.input-error,
 </div>
 <div id="screen-documents" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -745,6 +837,7 @@ select.input-error,
   </header>
   <div class="layout-b-hero"><h1>Document upload</h1></div>
   <div class="layout-b-body">
+    <div class="mobile-stepper"></div>
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Security check</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Property details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Finances</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot active"><span class="dot-num">5</span></div><span class="step-label active">Finishing up</span></li><div class="step-connector"></div><li class="sub-item done"><span class="sub-dot"></span>Declaration</li><li class="sub-item active"><span class="sub-dot"></span>Upload documents</li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Send us your documents by no later than 2024/04/30</h2>
@@ -896,7 +989,7 @@ select.input-error,
 </div>
 <div id="screen-success" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     
   </header>
   <div class="congrats-screen">
@@ -909,7 +1002,7 @@ select.input-error,
 </div>
 <div id="screen-offer" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     <div class="header-right">
       <div class="header-user">Good Morning Susan <div class="user-icon">&#128100;</div></div>
       <div class="divider-v"></div>
@@ -946,7 +1039,7 @@ select.input-error,
 </div>
 <div id="screen-complete" class="screen">
 <header class="header">
-    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span>| Reference number: 01234567890</span></span></div>
+    <div class="header-left"><div class="agenta-logo"><svg viewBox="0 0 68 22" xmlns="http://www.w3.org/2000/svg"><text x="1" y="17" font-family="Source Sans 3,Arial,sans-serif" font-weight="700" font-size="13" fill="#C8102E">AgentA</text></svg></div><span class="header-title">Home Loan application <span class="header-ref"><span class="ref-pipe"> | </span>Reference number: 01234567890</span></span></div>
     
   </header>
   <div class="complete-screen">
@@ -960,6 +1053,58 @@ select.input-error,
 </div>
 
 <script>
+
+/* ══ MOBILE STEPPER JS ══════════════════════════════════════ */
+var _stepMap = {
+  'screen-otp-1':     {step:1, name:'Security check',  sub:'OTP'},
+  'screen-otp-2':     {step:1, name:'Security check',  sub:'OTP'},
+  'screen-otp-3':     {step:1, name:'Security check',  sub:'OTP'},
+  'screen-colleagues':{step:1, name:'Security check',  sub:'Application assistance'},
+  'screen-property':  {step:2, name:'Property details', sub:'About the property'},
+  'screen-personal':  {step:3, name:'Details',          sub:'Personal'},
+  'screen-nationality':{step:3,name:'Details',          sub:'Nationality'},
+  'screen-employment':{step:3, name:'Details',          sub:'Employment'},
+  'screen-income':    {step:4, name:'Finances',         sub:'Income'},
+  'screen-loan-credit':{step:4,name:'Finances',         sub:'Loan and credit repayments'},
+  'screen-expenses':  {step:4, name:'Finances',         sub:'Monthly expenses'},
+  'screen-declaration':{step:5,name:'Finishing up',     sub:'Declaration'},
+  'screen-documents': {step:5, name:'Finishing up',     sub:'Upload documents'},
+};
+
+function _updateMobileStepper(screenId) {
+  var info = _stepMap[screenId];
+  // Find the stepper inside the active screen
+  var screen = document.getElementById(screenId);
+  if (!screen) return;
+  var stepper = screen.querySelector('.mobile-stepper');
+  if (!stepper) return;
+
+  if (!info) { stepper.innerHTML = ''; return; }
+
+  var track = '';
+  for (var i = 1; i <= 5; i++) {
+    var nodeCls, lineClsNext;
+    if (i < info.step) {
+      nodeCls = 'mob-done';
+    } else if (i === info.step) {
+      nodeCls = 'mob-active';
+    } else {
+      nodeCls = 'mob-inactive';
+    }
+    var inner = (i < info.step) ? '&#10003;' : i;
+    track += '<div class="mob-step-node ' + nodeCls + '">' + inner + '</div>';
+    if (i < 5) {
+      var lCls = (i < info.step) ? 'mob-line-done' : '';
+      track += '<div class="mob-step-line ' + lCls + '"></div>';
+    }
+  }
+
+  stepper.innerHTML =
+    '<div class="mob-step-label">Step ' + info.step + ': ' + info.name + '</div>' +
+    '<div class="mob-step-sublabel">' + info.sub + '</div>' +
+    '<div class="mob-step-track">' + track + '</div>';
+}
+
 function updateLoanAmount(){
   const price=document.getElementById('purchase-price');
   const deposit=document.getElementById('deposit-amount');
@@ -984,6 +1129,8 @@ function goToScreen(id){
     const oc=document.getElementById('otp-cellphone');
     if(lc&&oc&&lc.value.trim()) oc.value=lc.value.trim();
   }
+  // Update mobile horizontal stepper
+  _updateMobileStepper(id);
   if(id==='screen-processing') setTimeout(()=>goToScreen('screen-success'),2600);
 }
 function updateIdentityField(){
