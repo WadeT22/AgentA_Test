@@ -178,7 +178,7 @@ input.filled{border-color:#c8c8c8}
 }
 
 /* ══ SEARCHABLE DROPDOWN ═══════════════════════════════════════ */
-.searchable-wrapper{position:relative;width:100%}
+.searchable-wrapper{position:relative !important;width:100%;display:block !important}
 .searchable-input{
   width:100%;padding:10px 36px 10px 14px;
   border:1.5px solid #d0d0d0;border-radius:5px;
@@ -189,19 +189,22 @@ input.filled{border-color:#c8c8c8}
 .searchable-input:focus{outline:none;border-color:#C8102E;box-shadow:0 0 0 3px rgba(200,16,46,.08)}
 .searchable-input.input-error{border:2px solid #C8102E!important;box-shadow:0 0 0 3px rgba(200,16,46,.12)!important}
 .select-chevron{position:absolute;right:13px;top:50%;transform:translateY(-50%);pointer-events:none;transition:transform .18s}
-/* KEY FIX: dropdown is hidden by default, only shown when .open is added */
+/* KEY: dropdown uses position:fixed — bypasses all parent overflow/position issues */
 .srch-dropdown{
-  position:absolute;top:calc(100% + 2px);left:0;right:0;
+  position:fixed !important;
   background:#fff;
   border:1.5px solid #C8102E;
   border-radius:5px;
-  z-index:9999;
-  display:none;          /* HIDDEN BY DEFAULT */
+  z-index:99999;
+  display:none;
   max-height:220px;
   overflow-y:auto;
   box-shadow:0 6px 20px rgba(0,0,0,.15);
+  /* top, left, width set dynamically by openSearchable() */
 }
-.srch-dropdown.open{display:block}  /* only shown when .open applied */
+.srch-dropdown.open{display:block !important}
+/* Ensure form-area doesn't clip the dropdown */
+.form-area{overflow:visible !important}
 .srch-opt{
   padding:10px 14px;cursor:pointer;font-size:14px;color:#333;
   border-bottom:1px solid #f5f5f5;transition:background .12s;
@@ -350,6 +353,32 @@ select.input-error,
 
   /* Other mobile tweaks */
   .layout-a-card{padding:28px 22px}
+}
+
+
+/* ══ TOOLTIPS ═══════════════════════════════════════════════ */
+.tt-wrap{position:relative;display:inline-flex;align-items:center;margin-left:6px;vertical-align:middle}
+.tt-btn{background:none;border:none;cursor:pointer;padding:0;display:inline-flex;align-items:center}
+.tt-box{
+  display:none;position:absolute;
+  left:calc(100% + 14px);top:50%;transform:translateY(-50%);
+  background:#fff;border:1px solid #e0e0e0;border-radius:8px;
+  box-shadow:0 4px 24px rgba(0,0,0,.16);
+  padding:16px 36px 16px 16px;width:300px;
+  z-index:9000;font-size:13px;line-height:1.65;color:#333;font-weight:400;
+}
+.tt-box::before{
+  content:'';position:absolute;left:-8px;top:50%;
+  width:14px;height:14px;background:#fff;
+  border-left:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;
+  transform:translateY(-50%) rotate(45deg);
+}
+.tt-box.open{display:block}
+.tt-close{position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;font-size:16px;color:#999;line-height:1;padding:2px 5px}
+.tt-close:hover{color:#333}
+@media(max-width:720px){
+  .tt-box{left:auto;right:0;top:calc(100% + 10px);transform:none;width:240px}
+  .tt-box::before{left:auto;right:16px;top:-8px;transform:rotate(225deg)}
 }
 
 </style>
@@ -569,17 +598,24 @@ select.input-error,
 
       <!-- ── YES: Property form fields (shown by default) ── -->
       <div id="property-fields">
-        <div class="field-group"><label class="field-label">What is the property type? <span style="color:#1565C0;font-size:12px;cursor:pointer;">&#8505;</span></label><div class="select-wrapper"><select data-req="property type"><option value="">Select</option><option>Freestanding house or cluster</option><option>Sectional unit, apartment or flat</option><option>Townhouse</option><option>Duet unit</option><option>Small holdings</option></select></div></div>
+        <div class="field-group"><label class="field-label">What is the property type? <div class="tt-wrap"><button class="tt-btn" onclick="toggleTT('tt-proptype')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></button><div class="tt-box" id="tt-proptype"><button class="tt-close" onclick="closeTT('tt-proptype')">&#215;</button><strong>Freestanding house or cluster:</strong> a stand alone home separate from any other structure or support. (Full-Title)<br><br><strong>Sectional unit, apartment or flat:</strong> single homes found in group of buildings normally managed by a body corporate. (Sectional-Title)<br><br><strong>Townhouse:</strong> a single home that shares one or more walls with other independently-owned units. (Sectional-Title)<br><br><strong>Duet unit:</strong> two separate free-standing units on one property or two dwelling units attached to one another on one property. (Sectional-Title)<br><br><strong>Smallholdings:</strong> a property used for farming but much smaller than a typical farm; must be used for residential purposes. (Full-Title)</div></div></label><div class="select-wrapper"><select data-req="property type"><option value="">Select</option><option>Freestanding house or cluster</option><option>Sectional unit, apartment or flat</option><option>Townhouse</option><option>Duet unit</option><option>Small holdings</option></select></div></div>
         <div class="field-group"><label class="field-label">What type of roof does the property have?</label><div class="select-wrapper"><select data-req="roof type"><option value="">Select</option><option>Tile</option><option>Thatch</option><option>Concrete</option><option>Metal/Iron</option><option>Wood/Timber</option></select></div></div>
         <div class="field-group"><label class="field-label">What type of walls does the property have?</label><div class="select-wrapper"><select data-req="wall type"><option value="">Select</option><option>Brick</option><option>Concrete / Stone</option><option>Wood/Timber</option><option>Metal / Iron</option><option>Asbestos</option></select></div></div>
         <div class="field-group"><p style="font-size:14px;color:#333;margin-bottom:8px;">Is there any thatch structure on the property?</p>
-          <div class="radio-row"><input type="radio" name="thatch" checked><label>Yes</label></div>
+          <div class="radio-row"><input type="radio" name="thatch"><label>Yes</label></div>
           <div class="radio-row"><input type="radio" name="thatch"><label>No</label></div></div>
         <div class="field-group"><label class="field-label">What is the purchase price of the property?</label><input type="text" id="purchase-price" data-req="purchase price" placeholder="e.g. R 1 200 000.00" oninput="updateLoanAmount()"></div>
-        <div class="field-group"><label class="field-label">Do you have a deposit to put down? (optional) <span style="color:#1565C0;font-size:12px;cursor:pointer;">&#8505;</span></label><input type="text" id="deposit-amount" placeholder="e.g. R 200 000.00" oninput="updateLoanAmount()"><div class="field-hint">&#8505; Putting down a deposit, even a minimal amount could help you get a better interest rate</div></div>
+        <div class="field-group"><label class="field-label">Do you have a deposit to put down? (optional) <div class="tt-wrap"><button class="tt-btn" onclick="toggleTT('tt-deposit')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></button><div class="tt-box" id="tt-deposit"><button class="tt-close" onclick="closeTT('tt-deposit')">&#215;</button>A deposit is an upfront contribution to the purchase price of the property.</div></div></label><input type="text" id="deposit-amount" placeholder="e.g. R 200 000.00" oninput="updateLoanAmount()"><div class="field-hint">&#8505; Putting down a deposit, even a minimal amount could help you get a better interest rate</div></div>
         <div class="field-group"><label class="field-label">The loan amount you are applying for</label><div class="loan-calc-field" id="loan-amount-display">—</div></div>
-        <div class="field-group"><label class="field-label">How long would you like your term to be? <span style="color:#1565C0;font-size:12px;cursor:pointer;">&#8505;</span></label><div class="select-wrapper"><select data-req="loan term"><option value="">Select</option><option>5 years</option><option>10 years</option><option>15 years</option><option>20 years</option><option>25 years</option><option>30 years</option></select></div><div class="field-hint">&#8505; A longer term allows for lower monthly repayments, but will increase the interest to be paid over time.</div></div>
-        <div class="field-group"><label class="field-label">How will the property be occupied?</label><div class="select-wrapper"><select data-req="property occupation"><option value="">Select</option><option>It will become my primary residence</option><option>It will be rented out to a tenant</option><option>It will be used as a holiday home</option></select></div></div>
+        <div class="field-group"><label class="field-label">How long would you like your term to be? <div class="tt-wrap"><button class="tt-btn" onclick="toggleTT('tt-term')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></button><div class="tt-box" id="tt-term"><button class="tt-close" onclick="closeTT('tt-term')">&#215;</button>The term is the number of years you will have to pay the loan back.</div></div></label><div class="select-wrapper"><select data-req="loan term"><option value="">Select</option><option>5 years</option><option>10 years</option><option>15 years</option><option>20 years</option><option>25 years</option><option>30 years</option></select></div><div class="field-hint">&#8505; A longer term allows for lower monthly repayments, but will increase the interest to be paid over time.</div></div>
+        <div class="field-group"><label class="field-label">How will the property be occupied?</label><div class="select-wrapper"><select data-req="property occupation" onchange="handleOccupancy(this)"><option value="">Select</option><option>It will become my primary residence</option><option>It will be rented out to a tenant</option><option>It will be used as a holiday home</option></select></div></div>
+        <div class="field-group" id="rent-field" style="display:none;">
+          <label class="field-label">How much rent do you think you will get for the property?</label>
+          <div style="display:flex;align-items:center;border:1.5px solid #d0d0d0;border-radius:5px;background:#fff;padding:0 14px;">
+            <span style="font-weight:700;font-size:15px;margin-right:8px;color:#333;">R</span>
+            <input type="text" placeholder="0.00" style="border:none;flex:1;padding:10px 0;font-size:14px;outline:none;font-family:inherit;background:transparent;">
+          </div>
+        </div>
         <div class="section-divider"><h3>The property address</h3></div>
         <div class="field-group"><label class="field-label">Find your address</label><div class="address-input-wrap"><span class="loc-icon">&#128205;</span><input type="text" placeholder="e.g. 15 Alice lane, Sandton, 2021" style="padding-left:30px;"></div><a class="manual-link">I can&#39;t find the address, I will type it in manually</a></div>
         <div class="btn-row"><button class="btn-primary" onclick="if(!validateScreen('screen-property')) return; goToScreen('screen-personal')">Continue</button></div>
@@ -605,7 +641,17 @@ select.input-error,
       <h2 class="form-section-title">Tell us a bit about yourself</h2>
       <div class="field-group"><label class="field-label">Race</label><div class="select-wrapper"><select data-req="race"><option value="">Select</option><option>African</option><option>Asian</option><option>Coloured</option><option>Indian</option><option>White</option></select></div>
         <div class="info-box" style="margin-top:10px;"><span class="info-icon">&#8505;</span><p>Please note: All financial institutions are required to request information regarding race to assist government in monitoring lending practices in terms of the Home Loan and Mortgage Disclosure Act, 2000. It will have no affect on the outcome of your home loan application.</p></div></div>
-      <div class="field-group"><label class="field-label">Marital status</label><div class="select-wrapper"><select data-req="marital status"><option value="">Select</option><option>Married</option><option>Single</option><option>Divorced</option><option>Widowed</option></select></div></div>
+      <div class="field-group"><label class="field-label">Marital status</label><div class="select-wrapper"><select data-req="marital status" onchange="handleMaritalStatus(this)"><option value="">Select</option><option>Married</option><option>Single</option><option>Divorced</option><option>Widowed</option></select></div></div>
+      <div class="field-group" id="marital-contract-section" style="display:none;">
+        <label class="field-label">Marital contract type</label>
+        <div class="select-wrapper"><select data-req="marital contract type" id="marital-contract-select">
+          <option value="">Select</option>
+          <option>Out of community, without accrual</option>
+          <option>Out of community, with accrual</option>
+          <option>In community of property</option>
+          <option>Other</option>
+        </select></div>
+      </div>
       <div class="btn-row"><button class="btn-primary" onclick="if(!validateScreen('screen-personal')) return; goToScreen('screen-nationality')">Continue</button></div>
     </div>
   </div>
@@ -631,7 +677,7 @@ select.input-error,
         <div class="searchable-wrapper" id="nat-wrap">
           <input type="text" id="nat-input" class="searchable-input" data-req="Nationality" placeholder="e.g. South African" 
             autocomplete="off" oninput="filterSearchable('nat');clearNatError('nat')" onfocus="openSearchable('nat')" onblur="closeSearchable('nat')">
-          <svg class="select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          
           <input type="hidden" id="nat-value">
           <div class="srch-dropdown" id="nat-dropdown"><div class="srch-opt" onclick="selectSearchable('nat',this)">Afghan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Alandish</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Albanian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Algerian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">American</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Andorran</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Angolan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Antiguan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Argentine</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Armenian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Australian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Austrian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Azerbaijani</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Bahamian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Bahraini</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Bangladeshi</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Barbadian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Belarusian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Belgian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Belizean</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Beninese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Bhutanese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Bolivian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Bosnian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Botswanan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Brazilian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">British</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Bruneian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Bulgarian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Burkinabe</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Burundian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Cambodian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Cameroonian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Canadian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Cape Verdean</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Central African</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Chadian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Chilean</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Chinese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Colombian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Congolese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Costa Rican</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Croatian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Cuban</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Cypriot</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Czech</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Danish</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Djiboutian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Dominican</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Ecuadorian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Egyptian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Emirati</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Eritrean</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Estonian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Ethiopian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Fijian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Finnish</div><div class="srch-opt" onclick="selectSearchable('nat',this)">French</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Gabonese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Gambian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Georgian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">German</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Ghanaian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Greek</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Grenadian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Guatemalan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Guinean</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Guyanese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Haitian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Honduran</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Hungarian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Icelandic</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Indian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Indonesian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Iranian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Iraqi</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Irish</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Israeli</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Italian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Ivorian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Jamaican</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Japanese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Jordanian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Kazakhstani</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Kenyan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Kuwaiti</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Kyrgyz</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Laotian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Latvian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Lebanese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Lesothan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Liberian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Libyan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Lithuanian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Luxembourgish</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Malagasy</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Malawian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Malaysian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Maldivian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Malian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Maltese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Mauritanian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Mauritian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Mexican</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Moldovan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Mongolian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Montenegrin</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Moroccan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Mozambican</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Namibian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Nepalese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">New Zealander</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Nicaraguan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Nigerian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Norwegian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Omani</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Pakistani</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Palestinian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Panamanian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Paraguayan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Peruvian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Philippine</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Polish</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Portuguese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Qatari</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Romanian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Russian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Rwandan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Saudi</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Senegalese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Serbian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Seychellois</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Sierra Leonean</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Singaporean</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Slovak</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Slovenian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Somali</div><div class="srch-opt" onclick="selectSearchable('nat',this)">South African</div><div class="srch-opt" onclick="selectSearchable('nat',this)">South Sudanese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Spanish</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Sri Lankan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Sudanese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Surinamese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Swazi</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Swedish</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Swiss</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Syrian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Taiwanese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Tajik</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Tanzanian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Thai</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Togolese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Trinidadian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Tunisian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Turkish</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Ugandan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Ukrainian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Uruguayan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Uzbek</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Venezuelan</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Vietnamese</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Yemeni</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Zambian</div><div class="srch-opt" onclick="selectSearchable('nat',this)">Zimbabwean</div></div>
         </div>
@@ -642,7 +688,7 @@ select.input-error,
         <div class="searchable-wrapper" id="cob-wrap">
           <input type="text" id="cob-input" class="searchable-input" data-req="Country of birth" placeholder="e.g. South Africa" 
             autocomplete="off" oninput="filterSearchable('cob');clearNatError('cob')" onfocus="openSearchable('cob')" onblur="closeSearchable('cob')">
-          <svg class="select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          
           <input type="hidden" id="cob-value">
           <div class="srch-dropdown" id="cob-dropdown"><div class="srch-opt" onclick="selectSearchable('cob',this)">Afghanistan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Albania</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Algeria</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Angola</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Argentina</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Armenia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Australia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Austria</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Azerbaijan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Bahamas</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Bahrain</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Bangladesh</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Barbados</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Belarus</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Belgium</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Belize</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Benin</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Bhutan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Bolivia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Bosnia and Herzegovina</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Botswana</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Brazil</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Brunei</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Bulgaria</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Burkina Faso</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Burundi</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Cambodia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Cameroon</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Canada</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Cape Verde</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Central African Republic</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Chad</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Chile</div><div class="srch-opt" onclick="selectSearchable('cob',this)">China</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Colombia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Congo</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Costa Rica</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Croatia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Cuba</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Cyprus</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Czech Republic</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Denmark</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Djibouti</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Dominican Republic</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Ecuador</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Egypt</div><div class="srch-opt" onclick="selectSearchable('cob',this)">El Salvador</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Equatorial Guinea</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Eritrea</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Estonia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Eswatini</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Ethiopia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Fiji</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Finland</div><div class="srch-opt" onclick="selectSearchable('cob',this)">France</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Gabon</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Gambia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Georgia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Germany</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Ghana</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Greece</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Grenada</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Guatemala</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Guinea</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Guyana</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Haiti</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Honduras</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Hungary</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Iceland</div><div class="srch-opt" onclick="selectSearchable('cob',this)">India</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Indonesia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Iran</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Iraq</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Ireland</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Israel</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Italy</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Jamaica</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Japan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Jordan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Kazakhstan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Kenya</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Kuwait</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Kyrgyzstan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Laos</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Latvia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Lebanon</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Lesotho</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Liberia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Libya</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Lithuania</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Luxembourg</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Madagascar</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Malawi</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Malaysia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Maldives</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Mali</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Malta</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Mauritania</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Mauritius</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Mexico</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Moldova</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Mongolia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Montenegro</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Morocco</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Mozambique</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Myanmar</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Namibia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Nepal</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Netherlands</div><div class="srch-opt" onclick="selectSearchable('cob',this)">New Zealand</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Nicaragua</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Niger</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Nigeria</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Norway</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Oman</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Pakistan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Palestine</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Panama</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Papua New Guinea</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Paraguay</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Peru</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Philippines</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Poland</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Portugal</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Qatar</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Romania</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Russia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Rwanda</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Saudi Arabia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Senegal</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Serbia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Seychelles</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Sierra Leone</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Singapore</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Slovakia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Slovenia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Somalia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">South Africa</div><div class="srch-opt" onclick="selectSearchable('cob',this)">South Sudan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Spain</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Sri Lanka</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Sudan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Suriname</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Sweden</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Switzerland</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Syria</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Taiwan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Tajikistan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Tanzania</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Thailand</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Togo</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Trinidad and Tobago</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Tunisia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Turkey</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Turkmenistan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Uganda</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Ukraine</div><div class="srch-opt" onclick="selectSearchable('cob',this)">United Arab Emirates</div><div class="srch-opt" onclick="selectSearchable('cob',this)">United Kingdom</div><div class="srch-opt" onclick="selectSearchable('cob',this)">United States</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Uruguay</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Uzbekistan</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Venezuela</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Vietnam</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Yemen</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Zambia</div><div class="srch-opt" onclick="selectSearchable('cob',this)">Zimbabwe</div></div>
         </div>
@@ -668,14 +714,14 @@ select.input-error,
     <nav class="sidebar"><ul class="step-list"><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Security check</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot done"><span class="dot-num">None</span></div><span class="step-label done">Property details</span></li><div class="step-connector done"></div><li class="step-item"><div class="step-dot active"><span class="dot-num">3</span></div><span class="step-label active">Details</span></li><div class="step-connector"></div><li class="sub-item done"><span class="sub-dot"></span>Personal</li><li class="sub-item done"><span class="sub-dot"></span>Nationality</li><li class="sub-item active"><span class="sub-dot"></span>Employment</li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">4</span></div><span class="step-label">Finances</span></li><div class="step-connector"></div><li class="step-item"><div class="step-dot"><span class="dot-num">5</span></div><span class="step-label">Finishing up</span></li></ul></nav>
     <div class="form-area">
       <h2 class="form-section-title">Your current employment details</h2>
-      <div class="field-group"><label class="field-label">How are you currently employed?</label><div class="select-wrapper"><select data-req="employment type"><option value="">Please select</option><option>Full-time employed</option><option>Home executive</option><option>Part-time employed</option><option>Self employed</option><option>Temporary employed</option><option>Unemployed</option><option>Pensioner</option><option>Student</option></select></div></div>
-      <div class="field-group"><label class="field-label">Occupation</label><div class="select-wrapper"><select data-req="occupation"><option value="">Select</option><option>Accountant</option><option>Administrator</option><option>Architect</option><option>Doctor</option><option>Engineer</option><option>IT Professional</option><option>Lawyer</option><option>Manager</option><option>Nurse</option><option>Sales Professional</option><option>Teacher</option><option>Other</option></select></div></div>
-      <div class="field-group"><label class="field-label">Industry</label><div class="select-wrapper"><select data-req="industry"><option value="">Select</option><option>Agriculture</option><option>Construction</option><option>Education</option><option>Financial services</option><option>Government</option><option>Healthcare</option><option>Hospitality</option><option>Information Technology</option><option>Legal</option><option>Manufacturing</option><option>Mining</option><option>Retail</option><option>Transport</option><option>Other</option></select></div></div>
+      <div class="field-group"><label class="field-label">How are you currently employed?</label><div class="select-wrapper"><select data-req="employment type" id="emp-type-select" onchange="handleEmploymentType(this)"><option value="">Please select</option><option>Full-time employed</option><option>Home executive</option><option>Part-time employed</option><option>Self employed</option><option>Temporary employed</option><option>Unemployed</option><option>Pensioner</option><option>Student</option></select></div></div>
+      <div id="emp-occ-ind"><div class="field-group"><label class="field-label">Occupation</label><div class="searchable-wrapper" id="occ-wrap"><input type="text" id="occ-input" class="searchable-input" data-req="occupation" placeholder="e.g. Farmer" autocomplete="off" oninput="filterSearchable('occ')" onfocus="openSearchable('occ')" onblur="closeSearchable('occ')"><input type="hidden" id="occ-value"><div class="srch-dropdown" id="occ-dropdown"><div class="srch-opt" onclick="selectSearchable('occ',this)">Accountant</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Actuary</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Administration</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Architect</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Articles For Law</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Biokineticist</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Chartered Accountant</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Clerical</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Engineer</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Entrepreneur</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Farmer</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Fisherman</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Lawyer/advocate</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Medical</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Other</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Pilot</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Production</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Professional</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Professional Sportsman</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Religious</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Sales Person</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Service</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Technician</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Tradesman</div><div class="srch-opt" onclick="selectSearchable('occ',this)">Veterinary Surgeon</div><div class="srch-opt" onclick="selectSearchable('occ',this)">ANAESTHETIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">CARDIOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">CHIROPRACTOR</div><div class="srch-opt" onclick="selectSearchable('occ',this)">DENTAL TECHNICIAN</div><div class="srch-opt" onclick="selectSearchable('occ',this)">DENTIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">DERMATOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">GASTROENTEROLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">HOMEOPATH</div><div class="srch-opt" onclick="selectSearchable('occ',this)">MAXILLO-FACIAL & ORAL-SURG (DENTAL)</div><div class="srch-opt" onclick="selectSearchable('occ',this)">MEDICAL INTERNSHIP</div><div class="srch-opt" onclick="selectSearchable('occ',this)">MEDICAL OTHER</div><div class="srch-opt" onclick="selectSearchable('occ',this)">MEDICAL REGISTRARS</div><div class="srch-opt" onclick="selectSearchable('occ',this)">NEPHROLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">NEUROLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">NEUROSURGEON</div><div class="srch-opt" onclick="selectSearchable('occ',this)">OBSTETRICIAN AND GYNAECOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">OCCUPATIONAL THERAPIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">ONCOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">OPHTHALMOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">OPTOMETRIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">ORAL MEDICINE AND PERIODONTIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">ORAL PATHOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">ORTHODONTIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">ORTHOPAEDIC SURGEON</div><div class="srch-opt" onclick="selectSearchable('occ',this)">OTORHINOLARYNGOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PAEDIATRIC CARDIOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PAEDIATRIC SURGEON</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PAEDIATRICIAN</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PATHOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PERIODONTIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PHARMACIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PHYSICIAN</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PHYSIOTHERAPIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PLASTIC SURGEON</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PODIATRIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PROSTHODONTIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PSYCHIATRIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PSYCHOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">PULMONOLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">RADIOLOGIST AND ELECTRO-THERAPIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">SPORT MEDICINE</div><div class="srch-opt" onclick="selectSearchable('occ',this)">SURGEON</div><div class="srch-opt" onclick="selectSearchable('occ',this)">THORACIC SURGEON</div><div class="srch-opt" onclick="selectSearchable('occ',this)">UROLOGIST</div><div class="srch-opt" onclick="selectSearchable('occ',this)">VASCULAR SURGEON</div></div></div><div class="field-error" id="occ-error" style="display:none;"></div></div>
+      <div class="field-group"><label class="field-label">Industry</label><div class="searchable-wrapper" id="ind-wrap"><input type="text" id="ind-input" class="searchable-input" data-req="industry" placeholder="e.g. Agriculture, Farming and Forestry" autocomplete="off" oninput="filterSearchable('ind')" onfocus="openSearchable('ind')" onblur="closeSearchable('ind')"><input type="hidden" id="ind-value"><div class="srch-dropdown" id="ind-dropdown"><div class="srch-opt" onclick="selectSearchable('ind',this)">Agriculture, farming and forestry</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Armed forces</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Catering and food services</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Hospitality, hotels and restaurants</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Civil, municipal and governmental services</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Construction</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Education</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Financial services</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Insurance servicing</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Health and medical services</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Industrial and factory work</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Legal services</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Media and advertising</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Motor vehicle manufacturing</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Nature and animal conservation</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Platinum Mining</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Software and information technology</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Science and research</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Security</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Wholesale and retail</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Supermarkets and clothing</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Transport and shipping</div><div class="srch-opt" onclick="selectSearchable('ind',this)">Welfare and social services</div></div></div><div class="field-error" id="ind-error" style="display:none;"></div></div></div>
       <div class="field-group"><label class="field-label">What is the highest qualification level you have?</label><div class="select-wrapper"><select data-req="qualification level"><option value="">Please select</option><option>None</option><option>Matric certificate</option><option>Certificate</option><option>Diploma</option><option>Undergraduate degree</option><option>Postgraduate Diploma</option><option>Honours degree</option><option>Masters degree</option><option>Doctorate</option><option>Other qualification</option></select></div></div>
-      <div class="section-divider"><h3>Your employer&#39;s details</h3></div>
+      <div id="emp-employer-section"><div class="section-divider"><h3>Your employer&#39;s details</h3></div>
       <div class="field-group"><label class="field-label">Company name</label><input type="text" data-req="company name" placeholder="e.g. Sage Group"></div>
       <div class="section-divider"><h3>Your work address</h3></div>
-      <div class="field-group"><label class="field-label">Street address</label><div class="address-input-wrap"><span class="loc-icon">&#128205;</span><input type="text" placeholder="e.g. 15 Alice Lane, Sandton, 2196" style="padding-left:30px;"></div><a class="manual-link">I can&#39;t find my address, I will type it manually</a></div>
+      <div class="field-group"><label class="field-label">Street address</label><div class="address-input-wrap"><span class="loc-icon">&#128205;</span><input type="text" placeholder="e.g. 15 Alice Lane, Sandton, 2196" style="padding-left:30px;"></div><a class="manual-link">I can&#39;t find my address, I will type it manually</a></div></div>
       <div class="btn-row"><button class="btn-primary" onclick="if(!validateScreen('screen-employment')) return; goToScreen('screen-income')">Save and continue</button></div>
     </div>
   </div>
@@ -726,7 +772,37 @@ select.input-error,
       <div class="field-group"><label class="field-label">Monthly gross salary</label><input type="text" id="gross-salary" data-req="monthly gross salary" placeholder="e.g. R 25 000.00" oninput="updateNetIncome()"><div class="field-hint">Your gross salary is the amount you earn prior to any deductions made</div></div>
       <div class="field-group"><label class="field-label">Monthly net salary</label><input type="text" id="net-salary" data-req="monthly net salary" placeholder="e.g. R 18 000.00" oninput="updateNetIncome()"><div class="field-hint">Your net salary income is the amount deposited into your account after deductions</div></div>
       <div class="field-group"><p style="font-size:14px;font-weight:700;color:#222;margin-bottom:10px;">Do you have additional sources of income that you will use to pay off this home loan?</p>
-        <div class="toggle-group"><button class="toggle-btn" onclick="selectAdditionalIncome('yes')">Yes</button><button class="toggle-btn active" onclick="selectAdditionalIncome('no')">No</button></div></div>
+        <div class="toggle-group"><button class="toggle-btn" id="add-inc-yes" onclick="selectAdditionalIncome('yes')">Yes</button><button class="toggle-btn active" id="add-inc-no" onclick="selectAdditionalIncome('no')">No</button></div></div>
+      <div id="additional-income-section" style="display:none;">
+        <div class="field-group" style="margin-top:16px;">
+          <label class="field-label">How will you be paying for this home loan? <em style="font-style:normal;color:#888;">(You can select up to 5)</em></label>
+          <div class="multi-select-wrapper">
+            <div class="multi-select-display" id="add-income-display" onclick="toggleAddDropdown()">
+              <div id="add-income-tags" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;"><span style="color:#b0b0b0;font-size:13px;line-height:1.8;">Please select</span></div>
+              <svg id="add-income-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="multi-dropdown" id="add-income-dropdown">
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Salary / wages')"> Salary / wages</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Bonus')"> Bonus</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Commission')"> Commission</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Maintenance / alimony')"> Maintenance / alimony</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Donation/gift')"> Donation/gift</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Existing rental income')"> Existing rental income</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Pension')"> Pension</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Investments')"> Investments</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Company allowance')"> Company allowance</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Sale of property')"> Sale of property</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Sale of vehicle')"> Sale of vehicle</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Sale of business')"> Sale of business</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Inheritance')"> Inheritance</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Social grant')"> Social grant</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Retirement annuity')"> Retirement annuity</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Tax rebate')"> Tax rebate</label>
+            <label class="multi-option"><input type="checkbox" onchange="toggleAddOpt(this,'Winnings')"> Winnings</label>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="total-row" id="net-income-total">Total net income: R 0.00</div>
       <div class="btn-row"><button class="btn-primary" onclick="if(!validateScreen('screen-income')) return; goToScreen('screen-loan-credit')">Save and continue</button></div>
     </div>
@@ -1232,9 +1308,11 @@ function renderIncomeTags(){
   document.getElementById('income-tags').innerHTML=incomeSelected.map(l=>`<div class="multi-tag">${l} <button onclick="event.stopPropagation();removeIncomeTag('${l}')">x</button></div>`).join('');
 }
 function selectAdditionalIncome(v){
-  document.querySelectorAll('#screen-income .toggle-group .toggle-btn').forEach(b=>{
-    b.classList.toggle('active',(b.textContent.trim()==='Yes'&&v==='yes')||(b.textContent.trim()==='No'&&v==='no'));
-  });
+  document.getElementById('add-inc-yes').classList.toggle('active',v==='yes');
+  document.getElementById('add-inc-no').classList.toggle('active',v==='no');
+  const sec=document.getElementById('additional-income-section');
+  if(sec) sec.style.display=(v==='yes')?'block':'none';
+  if(v==='no'){ addIncomeSelected=[]; renderAddIncomeTags(); }
 }
 function toggleExpense(id){
   const icon=document.getElementById(id+'-icon'),sub=document.getElementById(id+'-sub');
@@ -1246,6 +1324,93 @@ function toggleDeclBtn(){
   const cb=document.getElementById('decl-agree'),btn=document.getElementById('decl-btn');
   btn.disabled=!cb.checked;
 }
+
+/* ── TOOLTIPS ────────────────────────────────── */
+function toggleTT(id){
+  const b=document.getElementById(id);
+  const was=b.classList.contains('open');
+  document.querySelectorAll('.tt-box.open').forEach(x=>x.classList.remove('open'));
+  if(!was) b.classList.add('open');
+}
+function closeTT(id){document.getElementById(id).classList.remove('open');}
+
+/* ── PROPERTY OCCUPANCY ──────────────────────── */
+function handleOccupancy(sel){
+  const r=document.getElementById('rent-field');
+  if(r) r.style.display=(sel.value==='It will be rented out to a tenant')?'block':'none';
+}
+
+/* ── MARITAL STATUS ──────────────────────────── */
+function handleMaritalStatus(sel){
+  const s=document.getElementById('marital-contract-section');
+  const ms=document.getElementById('marital-contract-select');
+  if(!s) return;
+  if(sel.value==='Married'){
+    s.style.display='block';
+    if(ms) ms.setAttribute('data-req','marital contract type');
+  } else {
+    s.style.display='none';
+    if(ms){ ms.removeAttribute('data-req'); ms.value=''; }
+  }
+}
+
+/* ── EMPLOYMENT TYPE ─────────────────────────── */
+function handleEmploymentType(sel){
+  const hideFor=['Home executive','Pensioner','Student','Unemployed'];
+  const occInd=document.getElementById('emp-occ-ind');
+  const empSec=document.getElementById('emp-employer-section');
+  const hide=hideFor.includes(sel.value);
+  if(occInd) occInd.style.display=hide?'none':'block';
+  if(empSec) empSec.style.display=hide?'none':'block';
+  // Remove/restore data-req on hidden fields
+  if(occInd){
+    occInd.querySelectorAll('[data-req]').forEach(el=>{
+      if(hide){ el.setAttribute('data-req-saved',el.getAttribute('data-req')); el.removeAttribute('data-req'); }
+      else { const s=el.getAttribute('data-req-saved'); if(s){ el.setAttribute('data-req',s); el.removeAttribute('data-req-saved'); } }
+    });
+  }
+  if(empSec){
+    empSec.querySelectorAll('[data-req]').forEach(el=>{
+      if(hide){ el.setAttribute('data-req-saved',el.getAttribute('data-req')); el.removeAttribute('data-req'); }
+      else { const s=el.getAttribute('data-req-saved'); if(s){ el.setAttribute('data-req',s); el.removeAttribute('data-req-saved'); } }
+    });
+  }
+}
+
+/* ── ADDITIONAL INCOME MULTI-SELECT ─────────── */
+var addIncomeSelected=[];
+function toggleAddDropdown(){
+  const dd=document.getElementById('add-income-dropdown');
+  dd.classList.toggle('open');
+  const ch=document.getElementById('add-income-chevron');
+  if(ch) ch.style.transform=dd.classList.contains('open')?'rotate(180deg)':'rotate(0deg)';
+}
+function toggleAddOpt(cb,label){
+  if(cb.checked){
+    if(addIncomeSelected.length>=5){cb.checked=false;return;}
+    if(!addIncomeSelected.includes(label)) addIncomeSelected.push(label);
+  } else {
+    addIncomeSelected=addIncomeSelected.filter(x=>x!==label);
+  }
+  renderAddIncomeTags();
+}
+function renderAddIncomeTags(){
+  const el=document.getElementById('add-income-tags');
+  if(!el) return;
+  if(addIncomeSelected.length===0){
+    el.innerHTML='<span style="color:#b0b0b0;font-size:13px;line-height:1.8;">Please select</span>';
+  } else {
+    el.innerHTML=addIncomeSelected.map(l=>`<div class="multi-tag">${l} <button onclick="event.stopPropagation();removeAddTag('${l}')">x</button></div>`).join('');
+  }
+}
+function removeAddTag(label){
+  addIncomeSelected=addIncomeSelected.filter(x=>x!==label);
+  document.querySelectorAll('#add-income-dropdown .multi-option input').forEach(cb=>{
+    if(cb.parentElement.textContent.trim()===label) cb.checked=false;
+  });
+  renderAddIncomeTags();
+}
+
 /* ── DOCUMENT UPLOAD ─────────────────────────────────────────── */
 var docFiles = {offer:[],id:[],payslip:[],bank:[]};
 
@@ -1275,10 +1440,6 @@ function handleFileSelect(section, input){
         <span class="doc-file-check">&#9989;</span>
         <span class="doc-file-name">${escHtml(file.name)}<span class="doc-file-size"> | ${sizeMB}</span></span>
         <div class="doc-file-actions">
-          <button class="doc-file-action-btn" onclick="viewDocFile('${escHtml(file.name)}')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            View
-          </button>
           <button class="doc-file-action-btn del" onclick="deleteDocFile('${section}',this,'${escHtml(file.name)}')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
             Delete
@@ -1375,10 +1536,6 @@ function fetchBankStatements(){
       <span class="doc-file-check">&#9989;</span>
       <span class="doc-file-name">${fakeName}<span class="doc-file-size"> | 1.2MB</span></span>
       <div class="doc-file-actions">
-        <button class="doc-file-action-btn" onclick="viewDocFile('${fakeName}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          View
-        </button>
         <button class="doc-file-action-btn del" onclick="deleteDocFile('bank',this,'${fakeName}')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
           Delete
@@ -1395,18 +1552,41 @@ function escHtml(s){
 
 /* ── SEARCHABLE DROPDOWN ──── */
 function openSearchable(id){
-  document.getElementById(id+'-dropdown').classList.add('open');
+  const inp=document.getElementById(id+'-input');
+  const dd=document.getElementById(id+'-dropdown');
+  if(!inp||!dd) return;
+  // Calculate position from input's screen rect
+  const rect=inp.getBoundingClientRect();
+  dd.style.top=(rect.bottom+2)+'px';
+  dd.style.left=rect.left+'px';
+  dd.style.width=rect.width+'px';
+  dd.classList.add('open');
 }
 function closeSearchable(id){
   // delay to allow click to register
   setTimeout(()=>document.getElementById(id+'-dropdown').classList.remove('open'),180);
 }
 function filterSearchable(id){
-  const q=document.getElementById(id+'-input').value.toLowerCase();
-  const opts=document.querySelectorAll('#'+id+'-dropdown .srch-opt');
+  const inp=document.getElementById(id+'-input');
+  const dd=document.getElementById(id+'-dropdown');
+  if(!inp||!dd) return;
+  // Re-calculate position each time (handles scroll between keystrokes)
+  const rect=inp.getBoundingClientRect();
+  dd.style.top=(rect.bottom+2)+'px';
+  dd.style.left=rect.left+'px';
+  dd.style.width=rect.width+'px';
+  const q=inp.value.toLowerCase();
+  const opts=dd.querySelectorAll('.srch-opt');
   opts.forEach(o=>{o.style.display=o.textContent.toLowerCase().includes(q)?'':'none'});
-  document.getElementById(id+'-dropdown').classList.add('open');
+  dd.classList.add('open');
   document.getElementById(id+'-value').value=''; // clear selection on type
+  // Auto-clear inline error when user types 2+ characters
+  if(inp.value.trim().length>=2){
+    inp.classList.remove('input-error');
+    inp.style.cssText='';
+    const fg=inp.closest('.field-group');
+    if(fg){const err=fg.querySelector('.field-error');if(err)err.style.display='none';}
+  }
 }
 function selectSearchable(id,el){
   document.getElementById(id+'-input').value=el.textContent;
@@ -1675,10 +1855,12 @@ function validateScreen(screenId){
     }
   });
   // Searchable dropdowns with data-req — skip hidden ones
+  // Accept either selected value OR typed text (min 2 chars)
   screen.querySelectorAll('input.searchable-input[data-req]').forEach(inp=>{
     if(!isVisible(inp)) return;
     const hid=inp.parentElement.querySelector('input[type=hidden]');
-    if(!hid||!hid.value){
+    const hasText=inp.value.trim().length>=2;
+    if((!hid||!hid.value)&&!hasText){
       inp.classList.add('input-error');
       inp.style.cssText='border:2px solid #C8102E!important;box-shadow:0 0 0 3px rgba(200,16,46,.10)!important;background:#fff9f9!important;';
       const err=inp.closest('.field-group').querySelector('.field-error');
@@ -1694,13 +1876,21 @@ function validateScreen(screenId){
   return valid;
 }
 
+// Close searchable dropdowns on scroll (fixed positioning drifts)
+document.addEventListener('scroll',function(){
+  document.querySelectorAll('.srch-dropdown.open').forEach(d=>d.classList.remove('open'));
+}, true);
 document.addEventListener('click',e=>{
+  if(!e.target.closest('.tt-wrap')) document.querySelectorAll('.tt-box.open').forEach(b=>b.classList.remove('open'));
   const dd=document.getElementById('income-dropdown'),disp=document.getElementById('income-display');
   if(dd&&!dd.contains(e.target)&&!disp.contains(e.target)){
     dd.classList.remove('open');
     const ch=document.querySelector('#income-display .multi-chevron');
     if(ch) ch.textContent='&#9660;';
   }
+});
+window.addEventListener('resize',function(){
+  document.querySelectorAll('.srch-dropdown.open').forEach(d=>d.classList.remove('open'));
 });
 </script>
 <!-- ══ PRE-QUALIFICATION REDIRECT MODAL ══════════════════════ -->
